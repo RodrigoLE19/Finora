@@ -6,8 +6,9 @@ const PORT = 3000;
 
 app. use(express.json());
 
-app.get('/', (_req, res) => {
+app.get('/api/health', (_req, res) => {
     res.json({
+        status: 'ok',
         message: 'API de finora funcionando correctamente'
     });
 });
