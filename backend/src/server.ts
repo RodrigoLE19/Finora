@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import healthRoutes from './routes/health.routes'
+
 
 const app = express();
 
@@ -9,14 +11,9 @@ app.use(cors({
     origin: `http://localhost:4200`
 }));
 
-app. use(express.json());
+app.use(express.json());
 
-app.get('/api/health', (_req, res) => {
-    res.json({
-        status: 'ok',
-        message: 'API de finora funcionando correctamente'
-    });
-});
+app.use('/api', healthRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor ejecutandose en http://localhost:${PORT}`);
