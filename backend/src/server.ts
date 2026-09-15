@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes'
 import movementRoutes from './routes/movement.routes';
 import categoryRoutes from './routes/category.routes';
 import budgetRoutes from './routes/budget.routes'
+import recorringExpenseRoutes from './routes/recurring-expense.routes';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/movimientos',movementRoutes);
 app.use('/api/categorias', categoryRoutes);
 app.use('/api/presupuestos', budgetRoutes);
+app.use('/api/gastos-recurrentes', recorringExpenseRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor ejecutandose en http://localhost:${PORT}`);
