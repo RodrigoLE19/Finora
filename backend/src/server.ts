@@ -8,6 +8,7 @@ import categoryRoutes from './routes/category.routes';
 import budgetRoutes from './routes/budget.routes'
 import recorringExpenseRoutes from './routes/recurring-expense.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import statisticsRoutes from './routes/statistics.routes';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/categorias', categoryRoutes);
 app.use('/api/presupuestos', budgetRoutes);
 app.use('/api/gastos-recurrentes', recorringExpenseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/estadisticas', statisticsRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor ejecutandose en http://localhost:${PORT}`);
