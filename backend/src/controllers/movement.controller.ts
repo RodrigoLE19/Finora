@@ -11,7 +11,8 @@ export const create = async (req: Request, res: Response) => {
             tipo,
             monto,
             descripcion,
-            fecha
+            fecha,
+            idGastoRecurrente
         } = req.body;
 
         if (!idCategoria || !tipo || !monto || !fecha) {
@@ -32,7 +33,9 @@ export const create = async (req: Request, res: Response) => {
             tipo,
             Number(monto),
             descripcion ?? null,
-            fecha
+            fecha,
+            idGastoRecurrente !== undefined && idGastoRecurrente !== null
+                ? Number(idGastoRecurrente) : null
         );
 
         return res.status(201).json({
@@ -40,7 +43,7 @@ export const create = async (req: Request, res: Response) => {
             movimiento
         });
     } catch (error) {
-        
+
         if (error instanceof Error && error.message === 'CATEGORY_NOT_FOUND') {
             return res.status(404).json({
                 message: 'La categoria no existe'
@@ -53,11 +56,39 @@ export const create = async (req: Request, res: Response) => {
             });
         }
 
+        if (
+            error instanceof Error &&
+            error.message === 'RECURRING_EXPENSE_NOT_FOUND'
+        ) {
+            return res.status(404).json({
+                message: 'El gasto recurrente no existe'
+            });
+        }
+
+        if (
+            error instanceof Error &&
+            error.message === 'RECURRING_EXPENSE_MUST_BE_EXPENSE'
+        ) {
+            return res.status(400).json({
+                message: 'Un gasto recurrente solo puede asociarse a un movimiento de gasto'
+            });
+        }
+
+        if (
+            error instanceof Error &&
+            error.message === 'RECURRING_EXPENSE_CATEGORY_MISMATCH'
+        ) {
+            return res.status(400).json({
+                message: 'La categoría del movimiento no coincide con la del gasto recurrente'
+            });
+        }
+
         console.error('Error al registra movimiento:', error);
 
         return res.status(500).json({
             message: 'Error interno del servidor'
         });
+
     }
 };
 
@@ -132,7 +163,7 @@ export const update = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        
+
         if (error instanceof Error && error.message === 'CATEGORY_NOT_FOUND') {
             return res.status(404).json({
                 message: 'La categoria no existe'
@@ -180,7 +211,7 @@ export const remove = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        
+
         if (error instanceof Error && error.message === 'MOVEMENT_NOT_FOUND') {
             return res.status(404).json({
                 message: 'Movimiento no encontrado'

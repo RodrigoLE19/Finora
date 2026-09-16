@@ -7,7 +7,8 @@ export const createMovement = async (
     tipo: string,
     monto: number,
     descripcion: string | null,
-    fecha: string
+    fecha: string,
+    idGastoRecurrente: number | null
 ) => {
 
     const categoriaResult = await pool.query(
@@ -24,14 +25,45 @@ export const createMovement = async (
         throw new Error('CATEGORY_TYPE_MISMATCH');
     }
 
+    if (idGastoRecurrente !== null) {
+        
+        if (tipo !== 'GASTO') {
+            throw new Error('RECURRING_EXPENSE_MUST_BE_EXPENSE');
+        }
+
+        const gastoRecurrenteResult = await pool.query(
+            `SELECT
+                id_gasto_recurrente,
+                id_categoria
+            FROM gastos_recurrentes
+            WHERE id_gasto_recurrente = $1
+                AND id_usuario = $2`,
+                [
+                    idGastoRecurrente,
+                    idUsuario
+                ]
+        );
+
+        if (gastoRecurrenteResult.rows.length === 0) {
+            throw new Error('RECURRING_EXPENSE_NOT_FOUND');
+        }
+
+        const gastoRecurrente = gastoRecurrenteResult.rows[0];
+
+        if (gastoRecurrente.id_categoria !== idCategoria) {
+            throw new Error('RECURRING_EXPENSE_CATEGORY_MISMATCH');
+        }
+    }
+
     const resultado = await pool.query(
         `INSERT INTO movimientos
-            (id_usuario, id_categoria, tipo, monto, descripcion, fecha)
-        VALUES ($1, $2, $3, $4, $5, $6)
+            (id_usuario, id_categoria, id_gasto_recurrente, tipo, monto, descripcion, fecha)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING
             id_movimiento,
             id_usuario,
             id_categoria,
+            id_gasto_recurrente,
             tipo,
             monto,
             descripcion,
@@ -40,6 +72,7 @@ export const createMovement = async (
         [
             idUsuario,
             idCategoria,
+            idGastoRecurrente,
             tipo,
             monto,
             descripcion,

@@ -31,6 +31,7 @@ CREATE TABLE movimientos (
     id_movimiento INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_usuario INTEGER NOT NULL,
     id_categoria INTEGER NOT NULL,
+    id_gasto_recurrente INTEGER
     tipo VARCHAR(10) NOT NULL,
     monto NUMERIC(12,2) NOT NULL,
     descripcion VARCHAR(255),
@@ -110,3 +111,9 @@ CREATE TABLE gastos_recurrentes (
         FOREIGN KEY (id_categoria)
         REFERENCES categorias(id_categoria)
 );
+
+ALTER TABLE movimientos
+ADD CONSTRAINT fk_movimiento_gasto_recurrente
+FOREIGN KEY (id_gasto_recurrente)
+REFERENCES gastos_recurrentes(id_gasto_recurrente)
+ON DELETE SET NULL;
