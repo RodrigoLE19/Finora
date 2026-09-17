@@ -1,1 +1,337 @@
-<p>login works!</p>
+<div
+  class="min-h-screen bg-[#f8f7fc]
+         flex items-center justify-center
+         px-4 py-6"
+>
+
+  <div
+    class="w-full max-w-[400px]
+           rounded-[28px]
+           bg-gradient-to-b
+           from-white via-white to-[#dcfbf7]
+           px-6 py-6
+           shadow-[0_12px_35px_rgba(15,23,42,0.08)]"
+  >
+
+    <div class="text-center">
+
+      <img
+        src="/assets/branding/logo-finora.jpeg"
+        alt="Logo Finora"
+        class="mx-auto h-16 w-16 rounded-2xl object-cover"
+      >
+
+      <h1 class="mt-3 text-xl font-semibold text-slate-900">
+        Finora
+      </h1>
+
+      <p class="mt-1 text-sm text-slate-600">
+        Tus finanzas, bajo control.
+      </p>
+
+    </div>
+
+    <div
+      class="mt-5 flex rounded-xl
+             bg-[#f0effc] p-1"
+    >
+
+      <button
+        type="button"
+        class="flex flex-1 items-center justify-center gap-2
+               rounded-lg bg-white
+               px-3 py-2
+               text-sm font-semibold text-[#087c71]
+               shadow-sm"
+      >
+
+        <img
+          src="/assets/icons/login.svg"
+          alt=""
+          class="h-[17px] w-[17px]"
+        >
+
+        Iniciar sesión
+
+      </button>
+
+
+      <a
+        routerLink="/register"
+        class="flex flex-1 items-center justify-center gap-2
+               rounded-lg
+               px-3 py-2
+               text-sm font-medium text-slate-600
+               transition
+               hover:text-[#087c71]"
+      >
+
+        <img
+          src="/assets/icons/crear.svg"
+          alt=""
+          class="h-[17px] w-[17px]"
+        >
+
+        Crear cuenta
+
+      </a>
+
+    </div>
+
+    <div class="mt-7">
+
+      <h2 class="text-2xl font-semibold text-slate-900">
+        Bienvenido de nuevo
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-600">
+        Ingresa a tu espacio de control financiero
+      </p>
+
+    </div>
+
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="iniciarSesion()"
+      class="mt-5 space-y-4"
+    >
+
+      <div>
+
+        <label
+          for="email"
+          class="mb-2 block text-sm font-medium text-slate-800"
+        >
+          Correo electrónico
+        </label>
+
+        <div class="relative">
+
+          <img
+            src="/assets/icons/correo.svg"
+            alt=""
+            class="absolute left-4 top-1/2
+                   h-5 w-5
+                   -translate-y-1/2"
+          >
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="rodrigo@finora.pe"
+            class="h-12 w-full
+                   rounded-xl
+                   border border-transparent
+                   bg-[#f0f0ff]
+                   pl-12 pr-11
+                   text-sm text-slate-800
+                   outline-none
+                   transition
+                   focus:border-[#159589]
+                   focus:ring-2
+                   focus:ring-[#c8f3ee]"
+          >
+
+          @if (
+            loginForm.controls.email.valid &&
+            loginForm.controls.email.value
+          ) {
+
+            <img
+              src="/assets/icons/check.svg"
+              alt=""
+              class="absolute right-4 top-1/2
+                     h-[19px] w-[19px]
+                     -translate-y-1/2"
+            >
+
+          }
+
+        </div>
+
+
+        @if (
+          loginForm.controls.email.touched &&
+          loginForm.controls.email.hasError('required')
+        ) {
+
+          <p class="mt-1 text-xs text-red-500">
+            El correo es obligatorio.
+          </p>
+
+        }
+
+
+        @if (
+          loginForm.controls.email.touched &&
+          loginForm.controls.email.hasError('email')
+        ) {
+
+          <p class="mt-1 text-xs text-red-500">
+            Ingresa un correo válido.
+          </p>
+
+        }
+
+      </div>
+
+      <div>
+
+        <label
+          for="password"
+          class="mb-2 block text-sm font-medium text-slate-800"
+        >
+          Contraseña
+        </label>
+
+        <div class="relative">
+
+          <img
+            src="/assets/icons/pass.svg"
+            alt=""
+            class="absolute left-4 top-1/2
+                   h-5 w-5
+                   -translate-y-1/2"
+          >
+
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Ingresa tu contraseña"
+            class="h-12 w-full
+                   rounded-xl
+                   border border-transparent
+                   bg-[#f0f0ff]
+                   pl-12 pr-12
+                   text-sm text-slate-800
+                   outline-none
+                   transition
+                   focus:border-[#159589]
+                   focus:ring-2
+                   focus:ring-[#c8f3ee]"
+          >
+
+
+          <button
+            type="button"
+            (click)="togglePassword()"
+            class="absolute right-4 top-1/2
+                   -translate-y-1/2"
+            aria-label="Mostrar u ocultar contraseña"
+          >
+
+            @if (showPassword()) {
+
+              <img
+                src="/assets/icons/ojo.svg"
+                alt=""
+                class="h-5 w-5"
+              >
+
+            } @else {
+
+              <img
+                src="/assets/icons/ojo.svg"
+                alt=""
+                class="h-5 w-5"
+              >
+
+            }
+
+          </button>
+
+        </div>
+
+
+        @if (
+          loginForm.controls.password.touched &&
+          loginForm.controls.password.hasError('required')
+        ) {
+
+          <p class="mt-1 text-xs text-red-500">
+            La contraseña es obligatoria.
+          </p>
+
+        }
+
+      </div>
+
+      <label
+        class="flex cursor-pointer
+               items-center gap-2
+               text-sm text-slate-600"
+      >
+
+        <input
+          type="checkbox"
+          class="h-4 w-4
+                 rounded
+                 accent-[#087c71]"
+        >
+
+        Recordar sesión
+
+      </label>
+
+
+      @if (errorMessage()) {
+
+        <p class="text-sm text-red-500">
+          {{ errorMessage() }}
+        </p>
+
+      }
+
+      <button
+        type="submit"
+        [disabled]="isLoading()"
+        class="flex h-12 w-full
+               items-center justify-center gap-2
+               rounded-xl
+               bg-[#168f83]
+               text-sm font-semibold text-white
+               shadow-md
+               transition
+               hover:bg-[#10796f]
+               disabled:cursor-not-allowed
+               disabled:opacity-60"
+      >
+
+        @if (isLoading()) {
+
+          Iniciando sesión...
+
+        } @else {
+
+          Iniciar sesión
+
+          <img
+            src="/assets/icons/Icon.svg"
+            alt=""
+            class="h-[18px] w-[18px]"
+          >
+
+        }
+
+      </button>
+
+    </form>
+
+    <p class="mt-6 text-center text-sm text-slate-600">
+
+      ¿No tienes una cuenta?
+
+      <a
+        routerLink="/register"
+        class="font-semibold text-[#087c71]
+               hover:underline"
+      >
+        Crear cuenta
+      </a>
+
+    </p>
+  </div>
+
+</div>

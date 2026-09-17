@@ -1,1 +1,334 @@
-<p>register works!</p>
+<div class="min-h-screen bg-[#f8f7fc]
+            flex items-center justify-center
+            px-4 py-6">
+
+    <div class="w-full max-w-[400px]
+                rounded-[28px]
+                bg-gradient-to-b
+                from-white via-white to-[#dcfbf7]
+                px-6 py-6
+                shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+
+        <div class="text-center">
+
+            <img src="/assets/branding/logo-finora.jpeg" alt="Logo Finora"
+                class="mx-auto h-16 w-16 rounded-2xl object-cover">
+
+            <h1 class="mt-3 text-xl font-semibold text-slate-900">
+                Finora
+            </h1>
+
+            <p class="mt-1 text-sm text-slate-600">
+                Tus finanzas, bajo control.
+            </p>
+
+        </div>
+
+        <div class="mt-5 flex rounded-xl
+                    bg-[#f0effc] p-1">
+
+            <a routerLink="/login" class="flex flex-1 items-center justify-center gap-2
+                        rounded-lg
+                        px-3 py-2
+                        text-sm font-medium text-slate-600
+                        transition
+                        hover:text-[#087c71]">
+
+                <img src="/assets/icons/login.svg" alt="" class="h-[17px] w-[17px]">
+
+                Iniciar sesión
+
+            </a>
+
+            <button type="button" class="flex flex-1 items-center justify-center gap-2
+                        rounded-lg bg-white
+                        px-3 py-2
+                        text-sm font-semibold text-[#087c71]">
+
+                <img src="/assets/icons/crear.svg" alt="" class="h-[17px] w-[17px]">
+
+                Crear cuenta
+
+            </button>
+
+        </div>
+
+        <div class="mt-7">
+
+            <h2 class="text-2xl font-semibold text-slate-900">
+                Crear cuenta
+            </h2>
+
+            <p class="mt-1 text-sm text-slate-600">
+                Comienza a tomar el control de tu dinero en minutos.
+            </p>
+
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="crearCuenta()" class="mt-5 space-y-4">
+
+            <div>
+
+                <label for="nombre" class="mb-2 block text-sm font-medium text-slate-800">
+                    Nombre Completo
+
+                </label>
+
+                <div class="relative">
+
+                    <img src="/assets/icons/user.svg" alt="" class="absolute left-4 top-1/2
+                                h-5 w-5 -translate-y-1/2">
+
+                    <input id="nombre" type="text" formControlName="nombre" placeholder="Rodrigo Estrada" class="h-12 w-full
+                                rounded-x1
+                                border border-transparent
+                                bg-[#f0f0ff]
+                                pl-12 pr-11
+                                text-sm text-slate-800
+                                outline-none transition
+                                focus:border-[#159589]
+                                focus:ring-2 focus:ring-[#c8f3ee]">
+
+                    @if (
+                    registerForm.controls.nombre.valid &&
+                    registerForm.controls.nombre.value
+                    ) {
+
+                    <img src="/assets/icons/check.svg" alt="" class="absolute right-4 top-1/2
+                                    h-[19px] w-[19px]
+                                    -translate-y-1/2">
+                    }
+
+                </div>
+            </div>
+
+            <div>
+
+                <label for="email" class="mb-2 block text-sm font-medium text-slate-800">
+                    Correo electrónico
+
+                </label>
+
+                <div class="relative">
+
+                    <img src="/assets/icons/correo.svg" alt="" class="absolute left-4 top-1/2
+                                h-5 w-5 -translate-y-1/2">
+
+                    <input id="email" type="email" formControlName="email" placeholder="ejemplo@gmail.com" class="h-12 w-full
+                                rounded-x1
+                                border border-transparent
+                                bg-[#f0f0ff]
+                                pl-12 pr-11
+                                text-sm text-slate-800
+                                outline-none transition
+                                focus:border-[#159589]
+                                focus:ring-2 focus:ring-[#c8f3ee]">
+
+                    @if (
+                    registerForm.controls.email.valid &&
+                    registerForm.controls.email.value
+                    ) {
+
+                    <img src="/assets/icons/check.svg" alt="" class="absolute right-4 top-1/2
+                                    h-[19px] w-[19px]
+                                    -translate-y-1/2">
+                    }
+
+                </div>
+            </div>
+
+            <div>
+
+                <label for="password" class="mb-2 block text-sm font-medium text-slate-800">
+                    Contraseña
+                </label>
+
+                <div class="relative">
+
+                    <div class="pointer-events-none absolute inset-y-0 left-4
+                                flex items-center">
+                        <img src="/assets/icons/pass.svg" alt="" class="h-5 w-5">
+                    </div>
+
+                    <input 
+                        id="password" 
+                        [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+                        placeholder="Ingresa tu contraseña" 
+                        class="h-12 w-full
+                                rounded-xl
+                                border border-transparent
+                                bg-[#f0f0ff]
+                                pl-12 pr-12
+                                text-sm text-slate-800
+                                outline-none transition
+                                focus:border-[#159589]
+                                focus:ring-2 focus:ring-[#c8f3ee]"
+                        >
+
+                    <button 
+                        type="button" 
+                        (click)="togglePassword()" 
+                        class="absolute inset-y-0 right-4
+                                flex items-center justify-center">
+
+                        @if (showPassword()) {
+
+                        <img src="/assets/icons/ojo.svg" alt="" class="h-5 w-5">
+
+                        } @else {
+
+                        <img src="/assets/icons/ocultar.svg" alt="" class="h-5 w-5">
+
+                        }
+
+                    </button>
+
+                </div>
+
+                @if (registerForm.controls.password.value) {
+
+                <div class="mt-2">
+
+                    <div class="mb-1 flex items-center justify-between
+                                text-xs text-slate-600">
+
+                        <span>
+                            Seguridad de la clave
+                        </span>
+
+                        @if (seguridadPassword() <= 1) { <span class="text-red-500">
+                            Débil
+                            </span>
+                            }
+
+                            @if (seguridadPassword() === 2) {
+                            <span class="text-amber-500">
+                                Media
+                            </span>
+                            }
+
+                            @if (seguridadPassword() >= 3) {
+                            <span class="font-semibold text-[#087c71]">
+                                Fuerte
+                            </span>
+                            }
+
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-1.5">
+
+                        @for (barra of [1, 2, 3]; track barra) {
+
+                        <div class="h-1.5 rounded-full" [class.bg-[#087c71]]="seguridadPassword() >= barra"
+                            [class.bg-slate-200]="seguridadPassword() < barra"></div>
+
+                        }
+
+                    </div>
+
+                </div>
+
+                }
+
+            </div>
+
+            <div>
+
+                <label for="confirmPassword" class="mb-2 block text-sm font-medium text-slate-800">
+                    Confirmar contraseña
+
+                </label>
+
+                <div class="relative">
+
+                    <img src="/assets/icons/confirmar.svg" alt="" class="absolute left-4 top-1/2
+                                h-5 w-5 -translate-y-1/2">
+
+                    <input 
+                        id="confirmPassword" 
+                        [type]="showConfirmPassword() ? 'text' : 'password'"
+                        formControlName="confirmPassword" 
+                        placeholder="Repite tu contraseña" 
+                        class="h-12 w-full
+                                rounded-x1
+                                border border-transparent
+                                bg-[#f0f0ff]
+                                pl-12 pr-11
+                                text-sm text-slate-800
+                                outline-none transition
+                                focus:border-[#159589]
+                                focus:ring-2 focus:ring-[#c8f3ee]">
+
+                    <button type="button" (click)="toggleConfirmPassword()"
+                        class="absolute right-4 top-1/2 -translate-y-1/2">
+
+                        @if (showConfirmPassword()) {
+
+                        <img src="/assets/icons/ojo.svg" alt="" class="h-5 w-5">
+
+                        } @else {
+
+                        <img src="/assets/icons/ocultar.svg" alt="" class="h-5 w-5">
+
+                        }
+
+                    </button>
+
+                </div>
+
+                @if (passwordsCoinciden()) {
+                <p class="mt-2 flex items-center gap-1
+                            text-xs font-medium text-[#087c71]">
+
+                    <span>✓</span>
+                    Las contraseñas coinciden
+
+                </p>
+                }
+
+            </div>
+
+            <button 
+                type="submit" 
+                [disabled]="isLoading()" 
+                class="flex h-12 w-full
+                        items-center justify-center gap-2
+                        rounded-xl
+                        bg-[#168f83]
+                        text-sm font-semibold text-white
+                        shadow-md transition
+                        hover:bg-[#10796f]
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60">
+
+                @if (isLoading()) {
+
+                Creando cuenta...
+
+                } @else {
+
+                Crear cuenta
+
+                <img src="/assets/icons/Icon.svg" alt="" class="h-[18px] w-[18px]">
+
+                }
+
+            </button>
+
+        </form>
+
+        <p class="mt-6 text-center text-sm text-slate-600">
+
+            ¿Ya tienes una cuenta?
+
+            <a routerLink="/login" class="font-semibold text-[#087c71]
+                        hover:underline">
+                Iniciar sesión
+
+            </a>
+
+        </p>
+
+    </div>
+
+</div>

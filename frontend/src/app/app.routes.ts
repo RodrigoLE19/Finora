@@ -7,6 +7,7 @@ import { Movements } from './features/movements/movements';
 import { Budgets } from './features/budgets/budgets';
 import { RecurringExpenses } from './features/recurring-expenses/recurring-expenses';
 import { Statistics } from './features/statistics/statistics';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -25,6 +26,8 @@ export const routes: Routes = [
     {
         path: '',
         component: MainLayout,
+        canActivate: [authGuard],
+        
         children: [
             {
                 path: 'dashboard',
