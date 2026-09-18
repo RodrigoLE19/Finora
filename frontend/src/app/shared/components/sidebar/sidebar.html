@@ -1,60 +1,265 @@
-<aside class="w-64 min-h-screen bg-white border-r border-slate-200 p-6">
-    <div class="mb-10">
-        <h1 class="text-2xl font-bold text-emerald-700">
-            Finora
-        </h1>
-        <p class="text-sm text-slate-500">
-            Tus finanzas, bajo control. 
-        </p>
+<header
+  class="fixed inset-x-0 top-0 z-40
+          flex h-16 items-center justify-between
+          border-b border-slate-200
+          bg-white px-4
+          md:hidden"
+>
+
+  <div class="flex items-center gap-3">
+
+    <img 
+      src="/assets/branding/logo-finora.jpeg" 
+      alt=""
+      class="h-9 w-9 rounded-xl object-cover"
+    >
+
+    <span class="font-bold text-slate-900">
+      Finora 
+    </span>
+  </div>
+
+  <button
+    type="button"
+    (click)="abrirMenu()"
+    aria-label="Abrir menú"
+    class="flex h-10 w-10 flex-col
+            items-center justify-center gap-1.5
+            rounded-lg hover:bg-slate-100"
+  >
+    <span class="h-0.5 w-5 bg-slate-700"></span>
+    <span class="h-0.5 w-5 bg-slate-700"></span>
+    <span class="h-0.5 w-5 bg-slate-700"></span>
+
+
+  </button>
+
+</header>
+
+@if (menuAbierto()) {
+  <div
+    class="fixed inset-0 z-40
+            bg-slate-900/40
+            md:hidden"
+    (click)="cerrarMenu()"
+  ></div>
+}
+
+
+<aside
+  class="fixed inset-y-0 left-0 z-50
+        flex h-screen w-64 flex-col
+         border-r border-slate-200
+         bg-white px-5 py-6
+         transition-transform duration-300
+         md:translate-x-0"
+  [class.-translate-x-full]="!menuAbierto()"
+  [class.translate-x-0]="menuAbierto()"
+>
+
+  <div class="flex items-center gap-3">
+
+    <img
+      src="/assets/branding/logo-finora.jpeg"
+      alt="Logo Finora"
+      class="h-11 w-11 rounded-xl object-cover"
+    >
+
+    <div>
+
+      <h1 class="text-xl font-bold text-slate-900">
+        Finora
+      </h1>
+
+      <p class="mt-0.5 text-[13px] leading-4 text-slate-500">
+        Tus finanzas, bajo<br>
+        control.
+      </p>
+
     </div>
 
-    <nav class="space-y-2">
-        <a
-            routerLink="/dashboard"
-            routerLinkActive="bg-emerald-50 text-emerald-700"
-            class="block rounded-lg px-4 py-3 text-slate-600 hover:bg-slate-100"
-        >
-            Dashboard 
-        </a>
-        <a
-            routerLink="/movements"
-            routerLinkActive="bg-emerald-50 text-emerald-700"
-            class="block rounded-lg px-4 py-3 text-slate-600 hover:bg-slate-100"
-        >
-            Movimientos
-        </a>
-        <a
-            routerLink="/budgets"
-            routerLinkActive="bg-emerald-50 text-emerald-700"
-            class="block rounded-lg px-4 py-3 text-slate-600 hover:bg-slate-100"
-        >
-            Presupuestos 
-        </a>
-        <a
-            routerLink="/recurring-expenses"
-            routerLinkActive="bg-emerald-50 text-emerald-700"
-            class="block rounded-lg px-4 py-3 text-slate-600 hover:bg-slate-100"
-        >
-            Gastos recurrentes 
-        </a>
-        <a
-            routerLink="/statistics"
-            routerLinkActive="bg-emerald-50 text-emerald-700"
-            class="block rounded-lg px-4 py-3 text-slate-600 hover:bg-slate-100"
-        >
-            Estadísticas
-        </a>
+  </div>
 
-        <button
-            type="button"
-            (click)="cerrarSesion()"
-            class="flex w-full items-center gap-3 rounded-lg
-                    px-3 py-2 text-sm text-slate-600
-                    transition hover:bg-slate-100"
 
+  <nav class="mt-9 space-y-2">
+
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="bg-[#168f83] text-white"
+      #dashboardActive="routerLinkActive"
+      class="flex items-center gap-3
+             rounded-xl px-4 py-3
+             text-sm font-medium
+             text-slate-600
+             transition
+             hover:bg-[#eaf8f6]"
+    >
+
+      <img
+        src="/assets/icons/dashboard/dashboard.svg"
+        alt=""
+        class="h-5 w-5 shrink-0"
+        [class.brightness-0]="dashboardActive.isActive"
+        [class.invert]="dashboardActive.isActive"
+      >
+
+      Dashboard
+
+    </a>
+
+
+    <a
+      routerLink="/movements"
+      routerLinkActive="bg-[#168f83] text-white"
+      #movementsActive="routerLinkActive"
+      class="flex items-center gap-3
+             rounded-xl px-4 py-3
+             text-sm font-medium
+             text-slate-600
+             transition
+             hover:bg-[#eaf8f6]"
+    >
+
+      <img
+        src="/assets/icons/dashboard/movimiento.svg"
+        alt=""
+        class="h-5 w-5 shrink-0"
+        [class.brightness-0]="movementsActive.isActive"
+        [class.invert]="movementsActive.isActive"
+      >
+
+      Movimientos
+
+    </a>
+
+    <a
+      routerLink="/budgets"
+      routerLinkActive="bg-[#168f83] text-white"
+      #budgetsActive="routerLinkActive"
+      class="flex items-center gap-3
+             rounded-xl px-4 py-3
+             text-sm font-medium
+             text-slate-600
+             transition
+             hover:bg-[#eaf8f6]"
+    >
+
+      <img
+        src="/assets/icons/dashboard/budgets.svg"
+        alt=""
+        class="h-5 w-5 shrink-0"
+        [class.brightness-0]="budgetsActive.isActive"
+        [class.invert]="budgetsActive.isActive"
+      >
+
+      Presupuestos
+
+    </a>
+
+    <a
+      routerLink="/recurring-expenses"
+      routerLinkActive="bg-[#168f83] text-white"
+      #recurringActive="routerLinkActive"
+      class="flex items-center gap-3
+             rounded-xl px-4 py-3
+             text-sm font-medium
+             text-slate-600
+             transition
+             hover:bg-[#eaf8f6]"
+    >
+
+      <img
+        src="/assets/icons/dashboard/recurring.svg"
+        alt=""
+        class="h-5 w-5 shrink-0"
+        [class.brightness-0]="recurringActive.isActive"
+        [class.invert]="recurringActive.isActive"
+      >
+
+      Gastos recurrentes
+
+    </a>
+
+    <a
+      routerLink="/statistics"
+      routerLinkActive="bg-[#168f83] text-white"
+      #statisticsActive="routerLinkActive"
+      class="flex items-center gap-3
+             rounded-xl px-4 py-3
+             text-sm font-medium
+             text-slate-600
+             transition
+             hover:bg-[#eaf8f6]"
+    >
+
+      <img
+        src="/assets/icons/dashboard/statistics.svg"
+        alt=""
+        class="h-5 w-5 shrink-0"
+        [class.brightness-0]="statisticsActive.isActive"
+        [class.invert]="statisticsActive.isActive"
+      >
+
+      Estadísticas
+
+    </a>
+
+  </nav>
+
+  <div class="mt-auto pt-6">
+
+    <div
+      class="flex items-center gap-3
+             rounded-xl bg-[#f2f1ff]
+             px-3 py-3"
+    >
+
+      <div
+        class="flex h-10 w-10 shrink-0
+               items-center justify-center
+               rounded-full bg-[#168f83]
+               text-sm font-semibold text-white"
+      >
+        {{ inicialUsuario }}
+      </div>
+
+      <div class="min-w-0 flex-1">
+
+        @if (usuario) {
+
+          <p class="truncate text-sm font-semibold text-slate-900">
+            {{ usuario.nombre }}
+          </p>
+
+          <p class="truncate text-xs text-slate-500">
+            {{ usuario.email }}
+          </p>
+
+        }
+
+      </div>
+
+      <button
+        type="button"
+        (click)="cerrarSesion()"
+        title="Cerrar sesión"
+        aria-label="Cerrar sesión"
+        class="flex h-9 w-9 shrink-0
+               items-center justify-center
+               rounded-lg transition
+               hover:bg-white"
+      >
+
+        <img
+          src="/assets/icons/dashboard/logout.svg"
+          alt=""
+          class="h-5 w-5"
         >
-            Cerrar sesión
 
-        </button>
-    </nav>
+      </button>
+
+    </div>
+
+  </div>
+
 </aside>

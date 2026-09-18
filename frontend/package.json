@@ -19,6 +19,7 @@
     "@angular/router": "^21.2.0",
     "@lucide/angular": "^1.46.0",
     "@tailwindcss/postcss": "^4.3.3",
+    "chart.js": "^4.5.1",
     "postcss": "^8.5.28",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.26.25",

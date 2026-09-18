@@ -1,8 +1,1284 @@
-<div class="p-8">
-    <h1 class="text-3xl font-bold text-slate-800">
-        Dashboard
-    </h1>
-    <p class="mt-4 text-slate-600">
-        {{ mensajeApi() }}
-    </p>
+<div class="w-full">
+
+    @if (isLoading()) {
+
+        <div class="flex min-h-[400px] items-center justify-center">
+
+            <p class="text-sm text-slate-500">
+                Cargando información...
+            </p>
+
+        </div>
+
+    } @else if (errorMessage()) {
+
+        <div class="flex min-h-[400px] items-center justify-center">
+
+            <p class="text-sm text-red-500">
+                {{ errorMessage() }}
+            </p>
+
+        </div>
+
+    } @else if (dashboard(); as data) {
+
+        <section
+            class="flex flex-col gap-5
+                   lg:flex-row
+                   lg:items-start
+                   lg:justify-between"
+        >
+
+            <div>
+
+                <p
+                    class="text-xs font-semibold uppercase
+                           tracking-wide text-[#087c71]"
+                >
+                    Balance personal
+                </p>
+
+                <h1
+                    class="mt-2 text-3xl
+                           font-bold text-slate-900"
+                >
+                    Hola, {{ usuario?.nombre }}
+                </h1>
+
+                <p
+                    class="mt-1 text-sm
+                           text-slate-500"
+                >
+                    Este es el resumen en tiempo real de tus finanzas.
+                </p>
+
+            </div>
+
+            <div
+                class="grid grid-cols-2 gap-2
+                       sm:flex
+                       sm:items-center
+                       sm:gap-3"
+            >
+
+                <div
+                    class="relative min-w-0
+                           sm:w-[210px]"
+                >
+
+                    <button
+                        type="button"
+                        (click)="alternarSelectorMes()"
+                        class="flex h-11 w-full
+                               items-center gap-3
+                               rounded-xl
+                               border border-slate-200
+                               bg-white px-4
+                               text-left
+                               transition
+                               hover:border-[#087c71]"
+                    >
+
+                        <img
+                            src="/assets/icons/dashboard/calendar.svg"
+                            alt=""
+                            class="h-5 w-5 shrink-0"
+                        >
+
+                        <span
+                            class="min-w-0 flex-1
+                                   truncate
+                                   text-sm font-medium
+                                   text-slate-700"
+                        >
+                            {{ periodoTexto }}
+                        </span>
+
+                        <span
+                            class="shrink-0
+                                   text-[10px]
+                                   text-slate-400"
+                        >
+                            ▼
+                        </span>
+
+                    </button>
+
+
+                    @if (selectorMesAbierto()) {
+
+                        <div
+                            class="fixed inset-0 z-40"
+                            (click)="cerrarSelectorMes()"
+                        ></div>
+
+                        <div
+                            class="absolute
+                                   left-0 top-12
+                                   z-50
+                                   w-[280px]
+                                   max-w-[calc(100vw-2rem)]
+                                   rounded-2xl
+                                   border border-slate-200
+                                   bg-white
+                                   p-4
+                                   shadow-xl
+
+                                   sm:left-auto
+                                   sm:right-0"
+                        >
+
+                            <div
+                                class="flex
+                                       items-center
+                                       justify-between"
+                            >
+
+                                <button
+                                    type="button"
+                                    (click)="cambiarAnioSelector(-1)"
+                                    class="flex h-9 w-9
+                                           items-center
+                                           justify-center
+                                           rounded-lg
+                                           text-xl
+                                           text-slate-500
+                                           transition
+                                           hover:bg-slate-100
+                                           hover:text-[#087c71]"
+                                    aria-label="Año anterior"
+                                >
+                                    ‹
+                                </button>
+
+
+                                <span
+                                    class="font-semibold
+                                           text-slate-900"
+                                >
+                                    {{ anioSelector() }}
+                                </span>
+
+
+                                <button
+                                    type="button"
+                                    (click)="cambiarAnioSelector(1)"
+                                    class="flex h-9 w-9
+                                           items-center
+                                           justify-center
+                                           rounded-lg
+                                           text-xl
+                                           text-slate-500
+                                           transition
+                                           hover:bg-slate-100
+                                           hover:text-[#087c71]"
+                                    aria-label="Año siguiente"
+                                >
+                                    ›
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="mt-4 grid
+                                       grid-cols-3
+                                       gap-2"
+                            >
+
+                                @for (
+                                    nombreMes of nombresMesesCortos;
+                                    track $index
+                                ) {
+
+                                    <button
+                                        type="button"
+                                        (click)="seleccionarMes($index + 1)"
+                                        class="rounded-lg
+                                               px-3 py-2
+                                               text-sm
+                                               font-medium
+                                               transition
+                                               hover:bg-[#eaf8f6]
+                                               hover:text-[#087c71]"
+
+                                        [class.bg-teal-700]="
+                                            mes() === $index + 1 &&
+                                            anio() === anioSelector()
+                                        "
+
+                                        [class.text-white]="
+                                            mes() === $index + 1 &&
+                                            anio() === anioSelector()
+                                        "
+
+                                        [class.text-slate-600]="
+                                            !(
+                                                mes() === $index + 1 &&
+                                                anio() === anioSelector()
+                                            )
+                                        "
+                                    >
+                                        {{ nombreMes }}
+                                    </button>
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    }
+
+                </div>
+
+                <a
+                    routerLink="/movements"
+                    class="flex h-11 min-w-0
+                           items-center
+                           justify-center gap-2
+                           rounded-xl
+                           bg-[#087c71]
+                           px-3
+                           text-xs font-semibold
+                           text-white
+                           shadow-sm
+                           transition
+                           hover:bg-[#066a61]
+
+                           sm:px-5
+                           sm:text-sm"
+                >
+
+                    <img
+                        src="/assets/icons/dashboard/plus.svg"
+                        alt=""
+                        class="h-5 w-5
+                               shrink-0
+                               brightness-0 invert"
+                    >
+
+                    <span class="whitespace-nowrap">
+                        Nuevo movimiento
+                    </span>
+
+                </a>
+
+            </div>
+
+        </section>
+
+        <section
+            class="mt-6 grid
+                   grid-cols-2 gap-3
+                   lg:grid-cols-5
+                   lg:gap-4"
+        >
+
+            <article
+                class="rounded-2xl
+                       border border-slate-100
+                       bg-white
+                       p-5
+                       shadow-sm"
+            >
+
+                <div
+                    class="flex
+                           items-start
+                           justify-between"
+                >
+
+                    <p
+                        class="text-xs
+                               font-semibold
+                               uppercase
+                               tracking-wide
+                               text-slate-500"
+                    >
+                        Saldo actual
+                    </p>
+
+
+                    <div
+                        class="flex h-9 w-9
+                               items-center
+                               justify-center
+                               rounded-xl
+                               bg-[#eef1ff]"
+                    >
+
+                        <img
+                            src="/assets/icons/dashboard/saldo.svg"
+                            alt=""
+                            class="h-4 w-4"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    class="mt-7
+                           text-2xl font-bold
+                           text-slate-900
+                           sm:text-3xl"
+                >
+                    S/ {{ data.resumen.saldo_actual }}
+                </p>
+
+
+                <p
+                    class="mt-2 text-xs
+                           text-slate-500"
+                >
+                    Balance registrado actualmente
+                </p>
+
+            </article>
+
+            <article
+                class="rounded-2xl
+                       border border-slate-100
+                       bg-white
+                       p-5
+                       shadow-sm"
+            >
+
+                <div
+                    class="flex
+                           items-start
+                           justify-between"
+                >
+
+                    <p
+                        class="text-xs
+                               font-semibold
+                               uppercase
+                               tracking-wide
+                               text-slate-500"
+                    >
+                        Ingresos mes
+                    </p>
+
+
+                    <div
+                        class="flex h-9 w-9
+                               items-center
+                               justify-center
+                               rounded-xl
+                               bg-emerald-50"
+                    >
+
+                        <img
+                            src="/assets/icons/dashboard/income.svg"
+                            alt=""
+                            class="h-4 w-4"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    class="mt-7
+                           text-2xl font-bold
+                           text-emerald-700
+                           sm:text-3xl"
+                >
+                    S/ {{ data.resumen.ingresos_mes }}
+                </p>
+
+
+                <p
+                    class="mt-2 text-xs
+                           text-slate-500"
+                >
+                    Total de ingresos del mes
+                </p>
+
+            </article>
+
+            <article
+                class="rounded-2xl
+                       border border-slate-100
+                       bg-white
+                       p-5
+                       shadow-sm"
+            >
+
+                <div
+                    class="flex
+                           items-start
+                           justify-between"
+                >
+
+                    <p
+                        class="text-xs
+                               font-semibold
+                               uppercase
+                               tracking-wide
+                               text-slate-500"
+                    >
+                        Gastos mes
+                    </p>
+
+
+                    <div
+                        class="flex h-9 w-9
+                               items-center
+                               justify-center
+                               rounded-xl
+                               bg-red-50"
+                    >
+
+                        <img
+                            src="/assets/icons/dashboard/expense.svg"
+                            alt=""
+                            class="h-4 w-4"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    class="mt-7
+                           text-2xl font-bold
+                           text-red-600
+                           sm:text-3xl"
+                >
+                    S/ {{ data.resumen.gastos_mes }}
+                </p>
+
+
+                <p
+                    class="mt-2 text-xs
+                           text-slate-500"
+                >
+                    Total de gastos del mes
+                </p>
+
+            </article>
+
+            <article
+                class="rounded-2xl
+                       border border-slate-100
+                       bg-white
+                       p-5
+                       shadow-sm"
+            >
+
+                <div
+                    class="flex
+                           items-start
+                           justify-between"
+                >
+
+                    <p
+                        class="text-xs
+                               font-semibold
+                               uppercase
+                               tracking-wide
+                               text-slate-500"
+                    >
+                        Comprometido
+                    </p>
+
+
+                    <div
+                        class="flex h-9 w-9
+                               items-center
+                               justify-center
+                               rounded-xl
+                               bg-[#eef1ff]"
+                    >
+
+                        <img
+                            src="/assets/icons/dashboard/clock.svg"
+                            alt=""
+                            class="h-4 w-4"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    class="mt-7
+                           text-2xl font-bold
+                           text-slate-900
+                           sm:text-3xl"
+                >
+                    S/ {{ data.resumen.dinero_comprometido }}
+                </p>
+
+
+                <p
+                    class="mt-2 text-xs
+                           text-slate-500"
+                >
+                    Gastos recurrentes pendientes
+                </p>
+
+            </article>
+
+            <article
+                class="col-span-2
+                       rounded-2xl
+                       bg-gradient-to-br
+                       from-[#087c71]
+                       to-[#149b8d]
+                       p-5
+                       text-white
+                       shadow-lg
+
+                       lg:col-span-1"
+            >
+
+                <div
+                    class="flex
+                           items-center gap-2"
+                >
+
+                    <img
+                        src="/assets/icons/dashboard/shield.svg"
+                        alt=""
+                        class="h-5 w-5
+                               brightness-0 invert"
+                    >
+
+
+                    <p
+                        class="text-xs
+                               font-semibold
+                               uppercase
+                               tracking-wide
+                               text-emerald-50"
+                    >
+                        Disponible realmente
+                    </p>
+
+                </div>
+
+
+                <p
+                    class="mt-7
+                           text-3xl font-bold
+                           text-white"
+                >
+                    S/ {{ data.resumen.disponible_real }}
+                </p>
+
+
+                <p
+                    class="mt-2
+                           text-xs leading-5
+                           text-emerald-50"
+                >
+                    Lo que puedes utilizar después de considerar
+                    tus compromisos pendientes.
+                </p>
+
+            </article>
+
+        </section>
+
+
+        <section
+            class="mt-6 grid
+                   grid-cols-1 gap-4
+
+                   xl:grid-cols-[1.35fr_1fr]
+                   xl:gap-6"
+        >
+
+            <div class="space-y-6">
+
+
+                <article
+                    class="rounded-2xl
+                           border border-slate-100
+                           bg-white
+                           p-6
+                           shadow-sm"
+                >
+
+                    <div
+                        class="flex flex-col gap-2
+                               sm:flex-row
+                               sm:items-center
+                               sm:justify-between"
+                    >
+
+                        <div
+                            class="flex
+                                   items-center gap-2"
+                        >
+
+                            <img
+                                src="/assets/icons/dashboard/category-chart.svg"
+                                alt=""
+                                class="h-5 w-5"
+                            >
+
+
+                            <h2
+                                class="text-lg
+                                       font-bold
+                                       text-slate-900"
+                            >
+                                Gastos por categoría
+                            </h2>
+
+                        </div>
+
+
+                        <span
+                            class="text-xs
+                                   text-slate-500"
+                        >
+                            Total: S/ {{ data.resumen.gastos_mes }}
+                        </span>
+
+                    </div>
+
+
+                    @if (data.distribucionGastos.length === 0) {
+
+                        <div
+                            class="mt-6
+                                   rounded-xl
+                                   border border-dashed
+                                   border-slate-300
+                                   p-8
+                                   text-center"
+                        >
+
+                            <p
+                                class="text-sm
+                                       text-slate-500"
+                            >
+                                No hay gastos registrados en este mes.
+                            </p>
+
+                        </div>
+
+                    } @else {
+
+                        <div
+                            class="mt-6 grid
+                                   grid-cols-1 gap-6
+
+                                   md:grid-cols-[220px_1fr]
+                                   md:items-center"
+                        >
+
+                            <div
+                                class="mx-auto
+                                       h-[210px]
+                                       w-[210px]
+
+                                       md:mx-0"
+                            >
+                                <canvas #gastosChart></canvas>
+                            </div>
+
+                            <div class="space-y-3">
+
+                                @for (
+                                    gasto of data.distribucionGastos;
+                                    track gasto.categoria
+                                ) {
+
+                                    <div
+                                        class="flex
+                                               items-center
+                                               justify-between
+                                               gap-3
+                                               rounded-xl
+                                               bg-[#f8f7fc]
+                                               px-4 py-3"
+                                    >
+
+                                        <div
+                                            class="flex
+                                                   min-w-0
+                                                   items-center
+                                                   gap-3"
+                                        >
+
+                                            <span
+                                                class="h-2.5
+                                                       w-2.5
+                                                       shrink-0
+                                                       rounded-full
+                                                       bg-[#087c71]"
+                                            ></span>
+
+
+                                            <p
+                                                class="truncate
+                                                       text-sm
+                                                       font-medium
+                                                       text-slate-700"
+                                            >
+                                                {{ gasto.categoria }}
+                                            </p>
+
+                                        </div>
+
+
+                                        <p
+                                            class="shrink-0
+                                                   text-sm
+                                                   font-semibold
+                                                   text-slate-900"
+                                        >
+                                            S/ {{ gasto.total }}
+                                        </p>
+
+                                    </div>
+
+                                }
+
+                            </div>
+
+                        </div>
+
+                    }
+
+                </article>
+
+                <article
+                    class="rounded-2xl
+                           border border-slate-100
+                           bg-white
+                           p-6
+                           shadow-sm"
+                >
+
+                    <div
+                        class="flex
+                               items-center gap-3"
+                    >
+
+                        <div
+                            class="flex h-10 w-10
+                                   shrink-0
+                                   items-center
+                                   justify-center
+                                   rounded-xl"
+                        >
+
+                            <img
+                                src="/assets/icons/dashboard/comparacion.svg"
+                                alt=""
+                                class="h-5 w-5"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <h2
+                                class="text-lg
+                                       font-bold
+                                       text-slate-900"
+                            >
+                                Comparación mensual
+                            </h2>
+
+                            <p
+                                class="mt-1
+                                       text-sm
+                                       text-slate-500"
+                            >
+                                Gastos del mes actual vs mes anterior
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="mt-6 grid
+                               grid-cols-2
+                               gap-3
+
+                               sm:gap-4"
+                    >
+
+                        <div
+                            class="rounded-xl
+                                   bg-[#f8f7fc]
+                                   p-4"
+                        >
+
+                            <p
+                                class="text-xs
+                                       uppercase
+                                       text-slate-500"
+                            >
+                                Mes anterior
+                            </p>
+
+                            <p
+                                class="mt-2
+                                       text-xl
+                                       font-bold
+                                       text-slate-800"
+                            >
+                                S/
+                                {{ data.comparacion.mes_anterior.gastos }}
+                            </p>
+
+                        </div>
+
+                        <div
+                            class="rounded-xl
+                                   bg-emerald-50
+                                   p-4"
+                        >
+
+                            <p
+                                class="text-xs
+                                       uppercase
+                                       text-emerald-700"
+                            >
+                                Mes actual
+                            </p>
+
+                            <p
+                                class="mt-2
+                                       text-xl
+                                       font-bold
+                                       text-[#087c71]"
+                            >
+                                S/
+                                {{ data.comparacion.mes_actual.gastos }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+            <article
+                class="rounded-2xl
+                       border border-slate-100
+                       bg-white
+                       p-6
+                       shadow-sm"
+            >
+
+                <div
+                    class="flex
+                           items-center
+                           justify-between
+                           gap-3"
+                >
+
+                    <div
+                        class="flex
+                               min-w-0
+                               items-center
+                               gap-2"
+                    >
+
+                        <img
+                            src="/assets/icons/dashboard/budget.svg"
+                            alt=""
+                            class="h-5 w-5
+                                   shrink-0"
+                        >
+
+                        <h2
+                            class="text-lg
+                                   font-bold
+                                   text-slate-900"
+                        >
+                            Presupuestos del mes
+                        </h2>
+
+                    </div>
+
+
+                    <a
+                        routerLink="/budgets"
+                        class="shrink-0
+                               text-sm
+                               font-semibold
+                               text-[#087c71]"
+                    >
+                        Ver todos
+                    </a>
+
+                </div>
+
+
+                <p
+                    class="mt-2
+                           text-sm
+                           text-slate-500"
+                >
+                    Seguimiento de tus límites por categoría.
+                </p>
+
+
+                @if (presupuestos().length === 0) {
+
+                    <div
+                        class="mt-6
+                               rounded-xl
+                               border border-dashed
+                               border-slate-300
+                               p-6
+                               text-center"
+                    >
+
+                        <p
+                            class="text-sm
+                                   text-slate-500"
+                        >
+                            Aún no tienes presupuestos para este mes.
+                        </p>
+
+                        <a
+                            routerLink="/budgets"
+                            class="mt-3
+                                   inline-block
+                                   text-sm
+                                   font-semibold
+                                   text-[#087c71]"
+                        >
+                            Crear presupuesto
+                        </a>
+
+                    </div>
+
+                } @else {
+
+                    <div class="mt-6 space-y-4">
+
+                        @for (
+                            presupuesto of presupuestos();
+                            track presupuesto.id_presupuesto
+                        ) {
+
+                            <div
+                                class="rounded-xl
+                                       bg-[#f8f7fc]
+                                       p-4"
+                            >
+
+                                <div
+                                    class="flex
+                                           items-center
+                                           justify-between
+                                           gap-3"
+                                >
+
+                                    <p
+                                        class="text-sm
+                                               font-semibold
+                                               text-slate-900"
+                                    >
+                                        {{ presupuesto.categoria }}
+                                    </p>
+
+                                    <p
+                                        class="text-sm
+                                               font-semibold
+                                               text-slate-700"
+                                    >
+                                        {{ presupuesto.porcentaje_usado }}%
+                                    </p>
+
+                                </div>
+
+                                <div
+                                    class="mt-3 h-2
+                                           overflow-hidden
+                                           rounded-full
+                                           bg-slate-200"
+                                >
+
+                                    <div
+                                        class="h-full
+                                               rounded-full
+                                               bg-[#087c71]"
+                                        [style.width.%]="
+                                            +presupuesto.porcentaje_usado > 100
+                                                ? 100
+                                                : +presupuesto.porcentaje_usado
+                                        "
+                                    ></div>
+
+                                </div>
+
+
+                                <div
+                                    class="mt-3 flex
+                                           items-center
+                                           justify-between
+                                           gap-3
+                                           text-xs
+                                           text-slate-500"
+                                >
+
+                                    <span>
+                                        Gastado:
+                                        S/ {{ presupuesto.gastado }}
+                                    </span>
+
+                                    <span>
+                                        Límite:
+                                        S/ {{ presupuesto.monto_limite }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        }
+
+                    </div>
+
+                }
+
+            </article>
+
+        </section>
+
+        <section
+            class="mt-6
+                   rounded-2xl
+                   border border-slate-100
+                   bg-white
+                   p-6
+                   shadow-sm"
+        >
+
+            <div
+                class="flex
+                       items-center
+                       justify-between
+                       gap-3"
+            >
+
+                <div
+                    class="flex
+                           min-w-0
+                           items-center
+                           gap-2"
+                >
+
+                    <img
+                        src="/assets/icons/dashboard/movimiento.svg"
+                        alt=""
+                        class="h-5 w-5
+                               shrink-0"
+                    >
+
+                    <h2
+                        class="text-lg
+                               font-bold
+                               text-slate-900"
+                    >
+                        Movimientos recientes
+                    </h2>
+
+                </div>
+
+
+                <a
+                    routerLink="/movements"
+                    class="shrink-0
+                           text-sm
+                           font-semibold
+                           text-[#087c71]"
+                >
+                    Ver todos
+                </a>
+
+            </div>
+
+
+            @if (data.movimientosRecientes.length === 0) {
+
+                <div
+                    class="mt-6
+                           rounded-xl
+                           border border-dashed
+                           border-slate-300
+                           p-6
+                           text-center"
+                >
+
+                    <p
+                        class="text-sm
+                               text-slate-500"
+                    >
+                        No hay movimientos registrados en este mes.
+                    </p>
+
+                </div>
+
+            } @else {
+
+                <div
+                    class="mt-6
+                           divide-y
+                           divide-slate-100"
+                >
+
+                    @for (
+                        movimiento of data.movimientosRecientes;
+                        track movimiento.id_movimiento
+                    ) {
+
+                        <div
+                            class="flex
+                                   items-center
+                                   justify-between
+                                   gap-4
+                                   py-4"
+                        >
+
+                            <div
+                                class="flex
+                                       min-w-0
+                                       items-center
+                                       gap-3"
+                            >
+
+                                <div
+                                    class="flex h-10 w-10
+                                           shrink-0
+                                           items-center
+                                           justify-center
+                                           rounded-full
+                                           bg-[#f0f0ff]"
+                                >
+
+                                    @if (movimiento.tipo === 'INGRESO') {
+
+                                        <img
+                                            src="/assets/icons/dashboard/salary.svg"
+                                            alt=""
+                                            class="h-5 w-5"
+                                        >
+
+                                    } @else if (
+                                        movimiento.categoria === 'Alimentación'
+                                    ) {
+
+                                        <img
+                                            src="/assets/icons/dashboard/cart.svg"
+                                            alt=""
+                                            class="h-5 w-5"
+                                        >
+
+                                    } @else if (
+                                        movimiento.categoria === 'Servicios'
+                                    ) {
+
+                                        <img
+                                            src="/assets/icons/dashboard/wifi.svg"
+                                            alt=""
+                                            class="h-5 w-5"
+                                        >
+
+                                    } @else if (
+                                        movimiento.categoria === 'Transporte'
+                                    ) {
+
+                                        <img
+                                            src="/assets/icons/dashboard/transport.svg"
+                                            alt=""
+                                            class="h-5 w-5"
+                                        >
+
+                                    } @else {
+
+                                        <img
+                                            src="/assets/icons/dashboard/expense.svg"
+                                            alt=""
+                                            class="h-5 w-5"
+                                        >
+
+                                    }
+
+                                </div>
+
+
+                                <div class="min-w-0">
+
+                                    <p
+                                        class="truncate
+                                               text-sm
+                                               font-semibold
+                                               text-slate-900"
+                                    >
+                                        {{ movimiento.descripcion }}
+                                    </p>
+
+                                    <p
+                                        class="mt-1
+                                               text-xs
+                                               text-slate-500"
+                                    >
+                                        {{ movimiento.categoria }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <p
+                                class="shrink-0
+                                       text-base
+                                       font-bold"
+
+                                [class.text-emerald-700]="
+                                    movimiento.tipo === 'INGRESO'
+                                "
+
+                                [class.text-red-600]="
+                                    movimiento.tipo === 'GASTO'
+                                "
+                            >
+
+                                @if (movimiento.tipo === 'INGRESO') {
+                                    +
+                                } @else {
+                                    -
+                                }
+
+                                S/ {{ movimiento.monto }}
+
+                            </p>
+
+                        </div>
+
+                    }
+
+                </div>
+
+            }
+
+        </section>
+
+    }
+
 </div>
