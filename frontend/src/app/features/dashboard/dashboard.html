@@ -678,13 +678,47 @@
                         >
 
                             <div
-                                class="mx-auto
+                                class="relative 
+                                        mx-auto
                                        h-[210px]
                                        w-[210px]
-
                                        md:mx-0"
                             >
                                 <canvas #gastosChart></canvas>
+
+                                <div
+                                    class="pointer-events-none
+                                            absolute inset-0
+                                            flex flex-col
+                                            items-center
+                                            justify-center
+                                            text-center"
+                                >
+
+                                    <p
+                                        class="text-[12px]
+                                                font-semibold
+                                                tracking-wide
+                                                text-slate-400"
+                                    >
+                                        {{ nombresMeses[mes() - 1] }}
+                                    </p>
+
+                                    <p
+                                        class="mt-1
+                                                text-xl
+                                                font-bold
+                                                text-slate-900"
+                                    >
+                                        S/ {{ data.resumen.gastos_mes }}
+                                    </p>
+
+                                    <p
+                                        class="mt-1 text-xs text-slate-500">
+                                        {{ data.distribucionGastos.length }}
+                                        {{ data.distribucionGastos.length === 1 ? 'rubro' : 'rubros' }}
+                                    </p>
+                                </div>
                             </div>
 
                             <div class="space-y-3">
@@ -716,7 +750,8 @@
                                                        w-2.5
                                                        shrink-0
                                                        rounded-full
-                                                       bg-[#087c71]"
+                                                       "
+                                                [style.backgroundColor]="obtenerColorCategoria(gasto.categoria)"
                                             ></span>
 
 
@@ -732,14 +767,22 @@
                                         </div>
 
 
-                                        <p
-                                            class="shrink-0
-                                                   text-sm
-                                                   font-semibold
-                                                   text-slate-900"
-                                        >
-                                            S/ {{ gasto.total }}
-                                        </p>
+                                        <div class="shrink-0 text-right">
+                                            <p
+                                                class="
+                                                    text-sm
+                                                    font-semibold
+                                                    text-slate-900"
+                                            >
+                                                S/ {{ gasto.total }}
+                                            </p>
+
+                                            <p class="mt-0.5 text-xs text-slate-400">
+                                                {{ calcularPorcentajeCategoria(gasto.total).toFixed(1) }}%
+                                            </p>
+
+                                        </div>
+                                        
 
                                     </div>
 
@@ -1170,54 +1213,11 @@
                                            bg-[#f0f0ff]"
                                 >
 
-                                    @if (movimiento.tipo === 'INGRESO') {
-
-                                        <img
-                                            src="/assets/icons/dashboard/salary.svg"
-                                            alt=""
-                                            class="h-5 w-5"
-                                        >
-
-                                    } @else if (
-                                        movimiento.categoria === 'Alimentación'
-                                    ) {
-
-                                        <img
-                                            src="/assets/icons/dashboard/cart.svg"
-                                            alt=""
-                                            class="h-5 w-5"
-                                        >
-
-                                    } @else if (
-                                        movimiento.categoria === 'Servicios'
-                                    ) {
-
-                                        <img
-                                            src="/assets/icons/dashboard/wifi.svg"
-                                            alt=""
-                                            class="h-5 w-5"
-                                        >
-
-                                    } @else if (
-                                        movimiento.categoria === 'Transporte'
-                                    ) {
-
-                                        <img
-                                            src="/assets/icons/dashboard/transport.svg"
-                                            alt=""
-                                            class="h-5 w-5"
-                                        >
-
-                                    } @else {
-
-                                        <img
-                                            src="/assets/icons/dashboard/expense.svg"
-                                            alt=""
-                                            class="h-5 w-5"
-                                        >
-
-                                    }
-
+                                    <img 
+                                        [src]="obtenerIconoMovimiento(movimiento.categoria, movimiento.tipo)"
+                                        [alt]="movimiento.categoria"
+                                        class="h-5 w-5"
+                                    >
                                 </div>
 
 

@@ -111,6 +111,59 @@ export class Dashboard implements OnDestroy {
     return `${nombreMes} ${this.anio()}`;
   }
 
+  coloresCategorias: Record<string, string> = {
+    'Alimentación': '#0F766E',
+    'Transporte': '#4F46E5',
+    'Hogar': '#F59E0B',
+    'Entretenimiento': '#8B5CF6',
+    'Servicios': '#2563EB',
+    'Salud': '#EF4444',
+    'Educación': '#06B6D4',
+    'Otros': '#64748B'
+  }
+
+  obtenerColorCategoria(categoria: string): string {
+    return this.coloresCategorias[categoria] ?? '#94A3B8';
+  }
+
+  calcularPorcentajeCategoria(totalCategoria: string | number): number {
+
+    const totalGastos = Number(this.dashboard()?.resumen.gastos_mes ?? 0);
+
+    if (totalGastos === 0) {
+      return 0;
+    }
+
+    return (Number(totalCategoria) / totalGastos) * 100;
+  }
+
+  obtenerIconoMovimiento(categoria: string, tipo: string): string {
+    const iconosGastos: Record<string, string> = {
+      'Alimentación': '/assets/icons/categorias/gastos/alimentacion.svg',
+      'Transporte': '/assets/icons/categorias/gastos/transporte.svg',
+      'Hogar': '/assets/icons/categorias/gastos/hogar.svg',
+      'Entretenimiento': '/assets/icons/categorias/gastos/entretenimiento.svg',
+      'Servicios': '/assets/icons/categorias/gastos/servicios.svg',
+      'Salud': '/assets/icons/categorias/gastos/salud.svg',
+      'Educación': '/assets/icons/categorias/gastos/educacion.svg',
+      'Otros': '/assets/icons/categorias/gastos/otros-g.svg'
+    };
+
+    const iconosIngresos: Record<string, string> = {
+      'Sueldo': '/assets/icons/categorias/ingresos/sueldo.svg',
+      'Ingreso adicional': '/assets/icons/categorias/ingresos/ingreso-adicional.svg',
+      'Otros': '/assets/icons/categorias/ingresos/otros-i.svg'
+    };
+
+    if (tipo === 'INGRESO') {
+      return iconosIngresos[categoria]
+        ?? '/assets/icons/dashboard/income.svg';
+    }
+
+    return iconosGastos[categoria]
+      ?? '/assets/icons/dashboard/expense.svg';
+  }
+
   ngOnInit() {
 
     this.cargarPeriodo();
@@ -305,15 +358,9 @@ export class Dashboard implements OnDestroy {
 
               data: montos,
 
-              backgroundColor: [
-                '#087c71',
-                '#159589',
-                '#5dd4c7',
-                '#8eddd5',
-                '#a7a9f5',
-                '#dc2626',
-                '#64748b'
-              ],
+              backgroundColor: categorias.map(
+                categoria => this.obtenerColorCategoria(categoria)
+              ),
 
               borderWidth: 0
             }
