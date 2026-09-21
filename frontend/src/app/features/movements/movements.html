@@ -1,1 +1,1156 @@
-<p>movements works!</p>
+<section class="w-full">
+    <div
+        class="flex flex-col gap-5
+                lg:flex-row
+                lg:items-start
+                lg:justify-between"
+    >
+
+        <div>
+
+            <p
+                class="text-xs font-semibold
+                    uppercase tracking-wide
+                    text-[#087c71]"
+            >
+
+                Historial de flujo
+            </p>
+
+            <h1
+                class="mt-2 text-3xl
+                font-bold text-slate-900
+                sm:text-4xl"
+            >
+
+                Movimientos 
+            </h1>
+
+            <p
+                class="mt-2 max-w-2xl
+                text-sm leading-6
+                text-slate-500">
+                Consulta y administra tus ingresos y gastos
+                de manera clara y ordenada. 
+            </p>
+
+        </div>
+
+        <div>
+
+            <button
+                type="button"
+                (click)="abrirNuevoMovimiento()"
+                class="flex h-11
+                        items-center justify-center
+                        gap-2 rounded-xl
+                        bg-[#087c71]
+                        px-5
+                        text-sm font-semibold
+                        text-white
+                        shadow-sm
+                        transition
+                        hover:bg-[#066a61]">
+
+                <img 
+                    src="/assets/icons/dashboard/plus.svg" 
+                    alt=""
+                    class="h-5 w-5 brightness-0 invert"
+                >
+
+                Nuevo movimiento
+            </button>
+        </div>
+        
+    </div>
+
+    <section
+        class="mt-6 rounded-2xl
+                border border-slate-100
+                bg-white p-4
+                shadow-sm"
+    >
+
+        <div
+            class="flex flex-col gap-4
+                    lg:flex-row
+                    lg:items-center
+                    lg:justify-between"
+        >
+
+            <div
+                class="flex h-11 w-full
+                        items-center gap-3
+                        rounded-xl
+                        border border-slate-200
+                        bg-[#f8f7fc]
+                        px-4
+                        lg:max-w-md"
+            >
+
+                <img 
+                    src="/assets/icons/dashboard/search.svg" 
+                    alt=""
+                    class="h-5 w-5 shrink-0"
+                >
+
+                <input 
+                    type="text"
+                    placeholder="Buscar movimiento..."
+                    [value]="busqueda()"
+                    (input)="actualizarBusqueda($event)"
+                    class="w-full bg-transparent
+                            text-sm text-slate-700
+                            outline-none
+                            placeholder:text-slate-400"
+                >
+
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <span class="text-sm text-slate-500">
+                    Categorias:
+                </span>
+
+                <div class="relative">
+
+                    <img 
+                        src="/assets/icons/movimientos/categorias.svg" 
+                        alt=""
+                        class="pointer-events-none
+                                absolute left-3 top-1/2
+                                h-5 w-5
+                                -translate-y-1/2"
+                    >
+
+                    <select
+                        [value]="filtroCategoria()"
+                        (change)="seleccionarCategoria($event)"
+                        class="h-11 rounded-xl
+                                border border-slate-200
+                                bg-[#f8f7fc]
+                                pl-10 pr-9
+                                text-sm font-medium
+                                text-slate-700
+                                outline-none
+                                transition
+                                focus:border-[#087c71]"
+                    >
+
+                        <option value="TODAS">
+                            Todas las Categorias
+                        </option>
+
+                        @for (
+                            categoria of categorias();
+                            track categoria
+                        ) {
+
+                            <option [value]="categoria">
+                                {{ categoria }}
+                            </option>
+                        }
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class=" mt-4 flex flex-wrap
+                    items-center gap-2"
+        >
+
+            <button
+                type="button"
+                (click)="seleccionarTipo('TODOS')"
+                class="rounded-full
+                        px-4 py-2
+                        text-sm font-semibold
+                        transition"
+                [class.bg-[#087c71]]="filtroTipo() === 'TODOS'"
+                [class.text-white]="filtroTipo() === 'TODOS'"
+                [class.bg-slate-100]="filtroTipo() !== 'TODOS'"
+                [class.text-slate-600]="filtroTipo() !== 'TODOS'"
+            >
+                <span>
+                    Todos
+                </span>
+
+                <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">
+                    {{ totalMovimientos() }}
+                </span>
+                
+            </button>
+
+            <button
+                type="button"
+                (click)="seleccionarTipo('INGRESO')"
+                class="flex items-center gap-2
+                        rounded-full
+                        px-4 py-2
+                        text-sm font-semibold
+                        transition"
+                [class.bg-[#087c71]]="filtroTipo() === 'INGRESO'"
+                [class.text-white]="filtroTipo() === 'INGRESO'"
+                [class.bg-slate-100]="filtroTipo() !== 'INGRESO'"
+                [class.text-slate-600]="filtroTipo() !== 'INGRESO'"
+            >
+                <span
+                    class="h-2 w-2
+                            rounded-full
+                            bg-emerald-500"></span>
+                
+                <span>
+                    Ingresos 
+                </span>
+                
+                <span class="text-xs text-slate-500">
+                    {{ totalIngresos() }}
+                </span>
+            </button>
+
+            <button
+                type="button"
+                (click)="seleccionarTipo('GASTO')"
+                class="flex items-center gap-2
+                        rounded-full
+                        px-4 py-2
+                        text-sm font-semibold
+                        transition"
+                [class.bg-[#087c71]]="filtroTipo() === 'GASTO'"
+                [class.text-white]="filtroTipo() === 'GASTO'"
+                [class.bg-slate-100]="filtroTipo() !== 'GASTO'"
+                [class.text-slate-600]="filtroTipo() !== 'GASTO'"
+            >
+                <span
+                    class="h-2 w-2
+                            rounded-full
+                            bg-red-500"></span>
+                
+                <span>
+                    Gastos 
+                </span>
+
+                <span class="text-xs text-slate-500">
+                    {{ totalGastos() }}
+                </span>
+            </button>
+        </div>
+    </section>
+
+    <section
+        class="mt-6 overflow-hidden
+                rounded-2xl
+                border border-slate-100
+                bg-white
+                shadow-sm"
+    >
+
+        @if (movimientosFiltrados().length === 0) {
+
+            <div class="p-10 text-center">
+
+                <p class="text-sm text-slate-500">
+                    No se encontraron movimientos. 
+                </p>
+            </div>
+
+        } @else {
+
+            <div class="hidden md:block">
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full">
+
+                        <thead class="bg-[#f0f1ff]">
+
+                            <tr
+                                class="text-left
+                                        text-xs font-semibold
+                                        uppercase tracking-wide
+                                        text-slate-500"
+                            >
+
+                                <th class="px-6 py-4">
+                                    Fecha
+                                </th>
+
+                                <th class="px-6 py-4">
+                                    Descripción
+                                </th>
+
+                                <th class="px-6 py-4">
+                                    Categoria 
+                                </th>
+
+                                <th class="px-6 py-4">
+                                    Tipo 
+                                </th>
+
+                                <th class="px-6 py-4 text-right">
+                                    Monto 
+                                </th>
+
+                                <th class="px-6 py-4 text-center">
+                                    Acciones 
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100">
+
+                            @for (
+                                movimiento of movimientosFiltrados();
+                                track movimiento.id_movimiento
+                            ) {
+
+                                <tr
+                                    class="transition hover:bg-slate-50">
+
+                                    <td
+                                        class="whitespace-nowrap
+                                                px-6 py-5
+                                                text-sm font-medium
+                                                text-slate-600"
+                                    >
+                                        {{ formatearFecha(movimiento.fecha ) }}
+                                    </td>
+
+                                    <td class="px-6 py-5">
+
+                                        <p class="font-semibold text-slate-900">
+                                            {{ movimiento.descripcion || 'Sin descripcion' }}
+                                        </p>
+                                    </td>
+
+                                    <td class="px-6 py-5">
+            
+                                            <span
+                                                class="inline-flex
+                                                        items-center
+                                                        gap-1.5
+                                                        rounded-full
+                                                        bg-[#f0f1ff]
+                                                        px-3 py-1
+                                                        text-xs font-medium
+                                                        text-slate-700"
+                                            >
+                                                <img 
+                                                    [src]="obtenerIconoCategoria(movimiento.id_categoria)"
+                                                    [alt]="movimiento.categoria"
+                                                    class="h-3.5 w-3.5 shrink-0"
+                                                >
+                                                {{ movimiento.categoria }}
+                                            </span>
+                                    </td>
+
+                                    <td class="px-6 py-5">
+
+                                        @if (
+                                            movimiento.tipo === 'INGRESO'
+                                        ) {
+
+                                            <span
+                                                class="inline-flex items-center gap-1.5
+                                                        rounded-full
+                                                        bg-emerald-50
+                                                        px-3 py-1
+                                                        text-xs font-semibold
+                                                        text-emerald-700"
+                                            >
+
+                                                <img 
+                                                    src="/assets/icons/movimientos/flecha-ingreso.svg" 
+                                                    alt=""
+                                                    class="h-3.5 w-3.5"
+                                                >
+
+                                                Ingreso
+
+                                            </span>
+                                        } @else {
+
+                                            <span
+                                                class="inline-flex items-center gap-1.5
+                                                        rounded-full
+                                                        bg-red-50
+                                                        px-3 py-1
+                                                        text-xs font-semibold
+                                                        text-red-600"
+                                            >
+
+                                                <img 
+                                                    src="/assets/icons/movimientos/flecha-gasto.svg" 
+                                                    alt=""
+                                                    class="h-3.5 w-3.5"
+                                                >
+                                                Gasto
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td
+                                        class="whitespace-nowrap
+                                                px-6 py-5
+                                                text-right
+                                                text-base font-bold"
+                                        [class.text-emerald-700]="movimiento.tipo === 'INGRESO'"
+                                        [class.text-red-600]="movimiento.tipo === 'GASTO'"
+                                    >
+
+                                        @if (
+                                            movimiento.tipo === 'INGRESO'
+                                        ) {
+                                            +
+                                        } @else {
+                                            - 
+                                        }
+
+                                        S/ {{ movimiento.monto }}
+
+                                    </td>
+
+                                    <td class="px-6 py-5">
+
+                                        <div class="flex items-center justify-center gap-3">
+
+                                            <button
+                                                type="button"
+                                                (click)="abrirEditarMovimiento(movimiento)"
+                                                class="flex h-9 w-9
+                                                        items-center
+                                                        justify-center
+                                                        rounded-lg
+                                                        transition
+                                                        hover:bg-slate-100"
+                                                aria-label="Editar movimiento"
+                                            >
+
+                                                <img
+                                                    src="/assets/icons/movimientos/editar.svg" 
+                                                    alt=""
+                                                    class="h-4 w-4"
+                                                >
+
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                (click)="eliminarMovimientos(movimiento.id_movimiento)"
+                                                class="flex h-9 w-9
+                                                        items-center
+                                                        justify-center
+                                                        rounded-lg
+                                                        transition
+                                                        hover:bg-red-50"
+                                                aria-label="Eliminar movimiento">
+
+                                                <img 
+                                                    src="assets/icons/movimientos/eliminar.svg" 
+                                                    alt=""
+                                                    class="h-4 w-4"
+                                                >
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="divide-y divide-slate-100 md:hidden">
+
+                @for (
+                    movimiento of movimientosFiltrados();
+                    track movimiento.id_movimiento
+                ) {
+
+                    <article class="p-4">
+
+                        <div class="flex items-start justify-between gap-4">
+
+                            <div class="flex min-w-0 items-center gap-3">
+
+                                <div
+                                    class="flex h-10 w-10
+                                            shrink-0
+                                            items-center
+                                            justify-center
+                                            rounded-full
+                                            bg-[#f0f1ff]"
+                                >
+
+                                    <img 
+                                        [src]="obtenerIconoCategoria(movimiento.id_categoria)"
+                                        [alt]="movimiento.categoria"
+                                        class="h-5 w-5"
+                                    >
+
+                                </div>
+
+                                <div class="min-w-0">
+
+                                    <p class="truncate text-sm font-semibold text-slate-900">
+                                        {{ movimiento.descripcion }}
+                                    </p>
+
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        {{ movimiento.categoria }}
+                                        . 
+                                        {{ formatearFecha(movimiento.fecha) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p
+                                class="shrink-0
+                                        text-sm font-bold"
+                                [class.text-emerald-700]="movimiento.tipo === 'INGRESO'"
+                                [class.text-red-600]="movimiento.tipo === 'GASTO'"
+                            >
+
+                                @if (
+                                    movimiento.tipo === 'INGRESO'
+                                ) {
+                                    +
+                                } @else {
+                                    - 
+                                }
+
+                                S/ {{ movimiento.monto }}
+                            </p>
+
+                        </div>
+
+                        <div class="mt-4 flex items-center
+                                    justify-between"
+                        >
+
+                            @if (
+                                movimiento.tipo === 'INGRESO'
+                            ) {
+
+                                <span
+                                    class="inline-flex items-center gap-1.5
+                                            rounded-full
+                                            bg-emerald-50
+                                            px-3 py-1
+                                            text-xs font-semibold
+                                            text-emerald-700"
+                                >
+
+                                    <img 
+                                        src="/assets/icons/movimientos/flecha-ingreso.svg" 
+                                        alt=""
+                                        class="h-3.5 w-3.5"
+                                    >
+                                    Ingreso 
+
+                                </span>
+
+                            } @else {
+
+                                <span 
+                                    class="inline-flex items-center gap-1.5
+                                            rounded-full
+                                            bg-red-50
+                                            px-3 py-1
+                                            text-xs font-semibold
+                                            text-red-600"
+                                >
+
+                                    <img 
+                                        src="/assets/icons/movimientos/flecha-gasto.svg" 
+                                        alt=""
+                                        class="h-3.5 w-3.5"
+                                    >
+
+                                    Gasto 
+
+                                </span>
+                            }
+
+                            <div class="flex items-center gap-2">
+
+                                <button
+                                    type="button"
+                                    (click)="abrirEditarMovimiento(movimiento)"
+                                    class="flex h-9 w-9
+                                            items-center
+                                            justify-center
+                                            rounded-lg
+                                            bg-slate-50"
+                                >
+
+                                    <img 
+                                        src="/assets/icons/movimientos/editar.svg" 
+                                        alt=""
+                                        class="h-4 w-4"
+                                    >
+                                </button>
+
+                                <button
+                                    type="button"
+                                    (click)="eliminarMovimientos(movimiento.id_movimiento)"
+                                    class="flex h-9 w-9
+                                            items-center
+                                            justify-center
+                                            rounded-lg
+                                            bg-red-50"
+                                >
+
+                                    <img 
+                                        src="/assets/icons/movimientos/eliminar.svg" 
+                                        alt=""
+                                        class="h-4 w-4"
+                                    >
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+    @if (formularioAbierto()) {
+
+        <div
+            class="fixed inset-0 z-50
+                    flex items-center justify-center
+                    overflow-hidden
+                    bg-black/40
+                    p-4"
+        >
+
+            <div
+                class="w-full max-w-2xl
+                        max-h-[calc(100dvh-2rem)]
+                        overflow-y-auto
+                        rounded-3xl
+                        bg-white
+                        shadow-2xl
+                        [scrollbar-width:none]
+                        [-ms-overflow-style:none]
+                        [&::webkit-scrollbar]:hidden"
+            >
+
+                <div
+                    class="h-2 rounded-t-3xl
+                            bg-red-600"
+                ></div>
+
+                <div class="p-6 sm:p-8">
+
+                    <div class="flex items-start justify-between gap-4">
+
+                        <div>
+
+                            <div class="flex flex-wrap items-center gap-2">
+
+                                <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">
+
+                                    @if (modoEdicion()) {
+                                        Editar movimiento 
+                                    } @else {
+                                        Nuevo movimiento 
+                                    }
+                                </h2>
+
+                                <span class="rounded-full bg-[#eef1ff]
+                                                px-3 py-1 text-sm font-medium
+                                                text-[#087c71]"
+                                >
+                                    Registro manual
+                                </span>
+
+                            </div>
+
+                            <p class="mt-2 text-sm text-slate-500">
+                                Registra un ingreso o gasto en tu balance.
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            (click)="cerrarFormulario()"
+                            class="flex h-10 w-10
+                                    shrink-0
+                                    items-center justify-center
+                                    rounded-xl
+                                    transition
+                                    hover:bg-slate-100"
+                            aria-label="Cerrar formulario"
+                        >
+
+                            <img 
+                                src="/assets/icons/movimientos/cerrar.svg" 
+                                alt=""
+                                class="h-5 w-5"
+                            >
+
+                        </button>
+
+                    </div>
+
+                    <form 
+                        [formGroup]="movimientoForm"
+                        (ngSubmit)="guardarMovimiento()"
+                    >
+
+                        <div class="mt-8">
+
+                            <label
+                                class="mb-3 block
+                                        text-sm font-semibold
+                                        uppercase tracking-wide
+                                        text-slate-700"
+                            >
+                                Tipo de operación 
+                            </label>
+
+                            <div class="grid grid-cols-2 rounded-2xl bg-[#f0f1ff]">
+
+                                <button
+                                    type="button"
+                                    (click)="
+                                        movimientoForm.controls.tipo.setValue('GASTO');
+                                        cambiarTipoFormulario()"
+                                    class="flex h-14
+                                            items-center justify-center
+                                            gap-2 rounded-xl
+                                            text-base font-semibold
+                                            transition"
+                                    [class.bg-white]="movimientoForm.controls.tipo.value === 'GASTO'"
+                                    [class.text-red-600]="movimientoForm.controls.tipo.value === 'GASTO'"
+                                    [class.shadow-sm]="movimientoForm.controls.tipo.value === 'GASTO'"
+                                    [class.text-slate-600]="movimientoForm.controls.tipo.value !== 'GASTO'"
+                                >
+
+                                    <img 
+                                        src="/assets/icons/movimientos/flecha-gasto-mov.svg" 
+                                        alt=""
+                                        class="h-5 w-5"
+                                    >
+
+                                    Gasto 
+                                </button>
+
+                                <button
+                                    type="button"
+                                    (click)="
+                                        movimientoForm.controls.tipo.setValue('INGRESO');
+                                        cambiarTipoFormulario()"
+                                    class="flex h-14
+                                            items-center justify-center
+                                            gap-2 rounded-xl
+                                            text-base font-semibold
+                                            transition"
+                                    [class.bg-white]="movimientoForm.controls.tipo.value === 'INGRESO'"
+                                    [class.text-[#087C71]]="movimientoForm.controls.tipo.value === 'INGRESO'"
+                                    [class.shadow-sm]="movimientoForm.controls.tipo.value === 'INGRESO'"
+                                    [class.text-slate-600]="movimientoForm.controls.tipo.value !== 'INGRESO'">
+
+                                    <img 
+                                        src="/assets/icons/movimientos/flecha-ingreso-mov.svg" 
+                                        alt=""
+                                        class="h-5 w-5"
+                                    >
+
+                                    Ingreso
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mt-7">
+
+                            <div class="mb-3 flex items-center justify-between gap-3">
+
+                                <label class="text-sm font-semibold uppercase tracking-wide text-slate-700">
+                                    Monto 
+                                </label>
+
+                                @if (
+                                    movimientoForm.controls.monto.valid &&
+                                    movimientoForm.controls.monto.value
+                                ) {
+
+                                    <div class="flex items-center gap-1.5
+                                                    text-sm font-medium
+                                                    text-[#087c71]"
+                                    >
+
+                                        <img 
+                                            src="/assets/icons/movimientos/check.svg" 
+                                            alt=""
+                                            class="h-4 w-4"
+                                        >
+
+                                        Monto válido
+
+                                    </div>
+
+                                }
+
+                            </div>
+
+                            <div class="flex h-20 items-center rounded-2xl bg-[#f0f1ff] px-5">
+
+                                <span class="shrink-0 text-2xl font-bold text-[#087c71] sm:text-3xl">
+
+                                    S/
+                                </span>
+
+                                <input 
+                                    type="number"
+                                    formControlName="monto"
+                                    min="0.01"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    class="min-w-0 flex-1
+                                            bg-transparent
+                                            px-3
+                                            text-3xl font-bold
+                                            text-slate-900
+                                            outline-none
+                                            sm:text-4xl
+                                            [appearance:textfield]
+                                            [&::-webkit-inner-spin-button]:appearance-none
+                                            [&::-webkit-outer-spin-button]:appearance-none"
+                                    >
+
+                                <span
+                                    class="shrink-0
+                                            rounded-lg
+                                            bg-[#e4e7ff]
+                                            px-3 py-1.5
+                                            text-sm font-semibold
+                                            text-slate-700"
+                                >
+
+                                    PEN 
+                                </span>
+
+                            </div>
+                            
+                        </div>
+
+                        <div class="mt-7">
+
+                            <div class="mb-3 flex items-center justify-between gap-3">
+
+                                <label
+                                    class="text-sm font-semibold
+                                            uppercase tracking-wide
+                                            text-slate-700"
+                                >
+                                    Categoría 
+                                </label>
+
+                                @if (movimientoForm.controls.tipo.value) {
+
+                                    <div class="flex items-center gap-2 text-sm text-slate-500">
+
+                                        <img 
+                                            src="/assets/icons/movimientos/cats.svg" 
+                                            alt=""
+                                            class="h-4 w-4"
+                                        >
+
+                                        <span class="text-sm text-slate-500">
+
+                                            Categorías de 
+                                            {{ movimientoForm.controls.tipo.value === 'GASTO'
+                                                ? 'Gasto'
+                                                : 'Ingreso'
+                                            }}
+                                            ({{ categoriasPorTipo(
+                                                movimientoForm.controls.tipo.value
+                                            ).length }})
+                                        </span>
+
+                                    </div>
+                                    
+                                }
+
+                            </div>
+
+                            <div class="relative">
+
+                                <img 
+                                    src="/assets/icons/movimientos/categorias.svg" 
+                                    alt=""
+                                    class="pointer-events-none
+                                            absolute left-4 top-1/2
+                                            h-5 w-5
+                                            -translate-y-1/2"
+                                >
+
+                                <select
+                                    formControlName="idCategoria"
+                                    class="h-14 w-full
+                                            appearance-none
+                                            rounded-2xl
+                                            border border-transparent
+                                            bg-[#f0f1ff]
+                                            pl-12 pr-10
+                                            text-base font-semibold
+                                            text-slate-800
+                                            outline-none
+                                            transition
+                                            focus:border-[#087c71]"
+                                >
+
+                                    <option [ngValue]="null">
+                                        Selecciona una categoría 
+                                    </option>
+
+                                    @for (
+                                        categoria of categoriasPorTipo(
+                                            movimientoForm.controls.tipo.value
+                                        );
+                                        track categoria.id_categoria
+                                    ) {
+
+                                        <option [ngValue]="categoria.id_categoria">
+                                            {{ categoria.nombre }}
+                                        </option>
+                                    }
+
+                                </select>
+
+                                <img 
+                                    src="/assets/icons/movimientos/flecha-select.svg" 
+                                    alt=""
+                                    class="pointer-events-none
+                                            absolute right-4 top-1/2
+                                            h-4 w-4
+                                            -translate-y-1/2"
+                                >
+
+                            </div>
+
+                            @if (movimientoForm.controls.tipo.value) {
+
+                                <div class="mt-3 flex flex-wrap items-center gap-2">
+
+                                    <span class="text-xs font-medium uppercase text-slate-400">
+                                        Sugeridas:
+                                    </span>
+
+                                    @for (
+                                        categoria of categoriasPorTipo(
+                                            movimientoForm.controls.tipo.value
+                                        ).slice(0, 4);
+                                        track categoria.id_categoria
+                                    ) {
+
+                                        <button
+                                            type="button"
+                                            (click)="
+                                                movimientoForm.controls.idCategoria
+                                                    .setValue(categoria.id_categoria)"
+                                            class="rounded-full
+                                                    bg-[#eef1ff]
+                                                    px-3 py-1
+                                                    text-sm
+                                                    text-slate-600
+                                                    transition
+                                                    hover:bg-[#dfe4ff]
+                                                    hover:text-slate-900"
+                                            >
+                                            {{ categoria.nombre }}
+                                        </button>
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="mt-7">
+
+                            <div class="mb-3 flex items-center justify-between gap-3">
+
+                                <label
+                                    class="text-sm font-semibold
+                                            uppercase tracking-wide
+                                            text-slate-700"
+                                >
+                                    Descripción o concepto
+                                </label>
+
+                                <span class="text-sm text-slate-500">
+                                    {{ movimientoForm.controls.descripcion.value?.length || 0 }}
+                                    / 60
+                                </span>
+
+                            </div>
+
+                            <div class="relative">
+
+                                <input 
+                                    type="text"
+                                    formControlName="descripcion"
+                                    maxlength="60"
+                                    placeholder="Ej. Compras del supermercado"
+                                    class="h-14 w-full
+                                            rounded-2xl
+                                            border border-transparent
+                                            bg-[#f0f1ff]
+                                            px-5 pr-12
+                                            text-base text-slate-800
+                                            outline-none
+                                            transition
+                                            placeholder:text-slate-400
+                                            focus:border-[#087c71]"
+                                >
+
+                                @if (
+                                    movimientoForm.controls.descripcion.value &&
+                                    movimientoForm.controls.descripcion.valid
+                                ) {
+
+                                    <img 
+                                        src="/assets/icons/movimientos/check-des.svg" 
+                                        alt=""
+                                        class="pointer-events-none
+                                                absolute right-4 top-1/2
+                                                h-5 w-5
+                                                -translate-y-1/2"
+                                    >
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <div class="mt-7">
+
+                            <label
+                                class="mb-3 block
+                                        text-sm font-semibold
+                                        uppercase tracking-wide
+                                        text-slate-700"
+                            >
+                                Fecha de registro 
+                                
+                            </label>
+
+                            <div
+                                class="flex h-14
+                                        cursor-pointer
+                                        items-center gap-3
+                                        rounded-2xl
+                                        bg-[#f0f1ff]
+                                        px-4"
+                                (click)="fechaInput.showPicker()"
+                            >
+
+                                <img 
+                                    src="/assets/icons/dashboard/calendar.svg" 
+                                    alt=""
+                                    class="h-5 w-5 shrink-0"
+                                >
+
+                                <input
+                                    #fechaInput 
+                                    type="date"
+                                    formControlName="fecha"
+                                    class="pointer-events-none
+                                            min-w-0 flex-1
+                                            bg-transparent
+                                            text-base
+                                            text-slate-800
+                                            outline-none
+                                            appearance-none
+                                            [&::-webkit-calendar-picker-indicator]:opacity-0"
+                                >
+
+
+                            </div>
+                        </div>
+
+                        <div
+                            class="mt-8 flex
+                                    gap-3 border-t
+                                    border-slate-100
+                                    pt-6
+                                    sm:flex-row
+                                    sm:justify-end"
+                        >
+
+                            <button
+                                type="button"
+                                (click)="cerrarFormulario()"
+                                class="h-12 rounded-xl
+                                        bg-[#f0f1ff]
+                                        px-6
+                                        text-sm font-semibold
+                                        text-slate-700
+                                        transition
+                                        hover:bg-slate-200"
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                [disabled]="movimientoForm.invalid"
+                                class="flex h-12
+                                        items-center justify-center
+                                        gap-2 rounded-xl
+                                        bg-[#087c71]
+                                        px-6
+                                        text-sm font-semibold
+                                        text-white
+                                        transition
+                                        hover:bg-[#066a61]
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-50"
+                            >
+
+                                <img 
+                                    src="assets/icons/movimientos/check-guardar.svg" 
+                                    alt=""
+                                    class="h-5 w-5 brightness-0 invert"
+                                >
+                                @if (modoEdicion()) {
+                                    Guardar cambios
+                                } @else {
+                                    Guardar movimiento 
+                                }
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+</section>

@@ -17,7 +17,7 @@ export const create = async (req: Request, res: Response) => {
 
         if (!idCategoria || !tipo || !monto || !fecha) {
             return res.status(400).json({
-                message: 'El tipo debe ser INREGRESO o GASTO'
+                message: 'Categoria, tipo, monto y fecha son obligatorios'
             });
         }
 
