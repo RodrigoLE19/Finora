@@ -1,1 +1,1262 @@
-<p>budgets works!</p>
+<section class="w-full">
+
+    <div
+        class="flex flex-col gap-5
+                lg:flex-row
+                lg:items-start
+                lg:justify-between"
+    >
+
+        <div>
+
+            <p
+                class="text-xs font-semibold
+                uppercase tracking-wide
+                text-[#087c71]"
+            >
+                Planificación financiera
+            </p>
+
+            <h1
+                class="mt-2
+                        text-3xl font-bold
+                        text-slate-900
+                        sm:text-4xl"
+            >
+                Presupuestos 
+            </h1>
+
+            <p
+                class="mt-2 max-w-2xl
+                        text-sm leading-6
+                        text-slate-500"
+            >
+                Define límites y controla cuánto puedes gastar
+                por categoría durante cada mes.
+            </p>
+
+        </div>
+
+        <div
+            class="grid grid-cols-2 gap-2
+                    lg:flex
+                    lg:flex-col
+                    lg:gap-3"
+        >
+
+            <div class="relative">
+
+                <button
+                    type="button"
+                    (click)="alternarSelectMes()"
+                    class="flex h-11 w-full
+                            items-center gap-3
+                            rounded-xl
+                            border border-slate-200
+                            bg-white px-4
+                            text-left
+                            shadow-sm
+                            transition
+                            hover:border-[#087c71]"
+                >
+
+                    <img 
+                        src="/assets/icons/dashboard/calendar.svg" 
+                        alt=""
+                        class="h-5 w-5 shrink-0"
+                    >
+
+                    <span
+                        class="flex-1 text-sm font-semibold text-slate-800"
+                    >
+                        {{ periodoTexto }}
+                    </span>
+
+                    <span class="text-xs text-slate-400">
+                        ▼
+                    </span>
+
+                </button>
+
+                @if (selectorMesAbierto()) {
+
+                    <div
+                        class="fixed inset-0 z-40"
+                        (click)="cerrarSelectorMes()"
+                    ></div>
+
+                    <div
+                        class="absolute right-0 top-12
+                                z-50
+                                w-[280px]
+                                rounded-2xl
+                                border border-slate-200
+                                bg-white p-4
+                                shadow-xl"
+                    >
+
+                        <div class="flex items-center justify-between">
+
+                            <button
+                                type="button"
+                                (click)="cambiarAnioSelector(-1)"
+                                class="flex h-9 w-9
+                                        items-center justify-center
+                                        rounded-lg
+                                        text-xl
+                                        text-slate-500
+                                        hover:bg-slate-100"
+                            >
+
+                                ‹
+                            </button>
+
+                            <span class="font-semibold text-slate-900">
+                                {{ anioSelector() }}
+                            </span>
+
+                            <button
+                                type="button"
+                                (click)="cambiarAnioSelector(1)"
+                                class="flex h-9 w-9
+                                        items-center justify-center
+                                        rounded-lg
+                                        text-xl
+                                        text-slate-500
+                                        hover:bg-slate-100"
+                            >
+                                ›
+                            </button>
+
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-3 gap-2">
+
+                            @for (
+                                nombreMes of nombreMesesCortos;
+                                track $index
+                            ) {
+
+                                <button
+                                    type="button"
+                                    (click)="seleccionarMes($index + 1)"
+                                    class="rounded-lg
+                                            px-3 py-2
+                                            text-sm font-medium
+                                            transition
+                                            hover:bg-[#eaf8f6]"
+                                    [class.bg-[#087c71]]="
+                                        mes() === $index + 1 &&
+                                        anio() === anioSelector()
+                                        
+                                    "
+                                    [class.text-white]="
+                                        mes() === $index + 1 &&
+                                        anio() === anioSelector()
+                                    "
+                                >
+                                    {{ nombreMes }}
+                                </button>
+                            }
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <button
+                type="button"
+                (click)="abrirNuevoPresupuesto()"
+                class="flex h-11
+                        items-center justify-center
+                        gap-2 rounded-xl
+                        bg-[#087c71]
+                        px-5
+                        text-sm font-semibold
+                        text-white
+                        shadow-sm
+                        transition
+                        hover:bg-[#066a61]"
+            >
+
+                <img 
+                    src="/assets/icons/dashboard/plus.svg" 
+                    alt=""
+                    class="h-5 w-5 brightness-0 invert"
+                >
+
+                Nuevo presupuesto 
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section
+    class="mt-6 rounded-3xl
+            border border-slate-100
+            bg-white
+            p-5
+            shadow-sm
+            sm:p-6"
+>
+
+    <p
+        class="text-xs font-semibold
+                uppercase tracking-wide
+                text-slate-500"
+    >
+        Consolidado mensual 
+    </p>
+
+    <div
+        class="mt-5 grid
+                grid-cols-1 gap-4
+                lg:grid-cols-[1.1fr_2fr]"
+    >
+
+        <div>
+
+            <p class="text-sm text-slate-500">
+                Gastado este mes
+            </p>
+
+            <div class="mt-2 flex items-end gap-2">
+
+                <p class="text-4xl font-bold text-slate-900">
+                    S/ {{ totalGastado().toFixed(2) }}
+                </p>
+
+                <p class="pb-1 text-sm text-slate-500">
+                    / S/ {{ totalPresupuestado().toFixed(2) }}
+                </p>
+            </div>
+
+            <p class="mt-3 text-sm text-[#087c71]">
+                {{ totalCategorias() }}
+                {{ totalCategorias() === 1
+                    ? 'categoria activa'
+                    : 'categorias activas'
+                }}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+
+            <article class="rounded-2xl bg-[#f0f1ff] p-4">
+
+                <div class="flex items-start justify-between gap-3">
+
+                    <div>
+
+                        <p class="text-xs text-slate-500">
+                            Presupuesto total 
+                        </p>
+
+                        <p class="mt-2 text-xl font-bold text-slate-900">
+                            S/ {{ totalPresupuestado().toFixed(2) }}
+                        </p>
+                    </div>
+
+                    <img 
+                        src="/assets/icons/presupuestos/pre-total.svg" 
+                        alt=""
+                        class="h-5 w-5"
+                    >
+                </div>
+
+            </article>
+
+            <article class="rounded-2xl bg-[#f0f1ff] p-4">
+
+                <div class="flex items-start justify-between gap-3">
+
+                    <div>
+
+                        <p class="text-xs text-slate-500">
+                            Gastado a la fecha 
+                        </p>
+
+                        <p class="mt-2 text-xl font-bold text-slate-900">
+                            S/ {{ totalGastado().toFixed(2) }}
+                        </p>
+                    </div>
+
+                    <img 
+                        src="/assets/icons/dashboard/expense.svg" 
+                        alt=""
+                        class="h-5 w-5"
+                    >
+                </div>
+
+            </article>
+
+            <article class="rounded-2xl bg-emerald-50 p-4">
+
+                <div class="flex items-start justify-between gap-3">
+
+                    <div>
+
+                        <p class="text-xs text-emerald-700">
+                            Disponible global 
+                        </p>
+
+                        <p class="mt-2 text-xl font-bold text-[#087c71]">
+                            S/ {{ totalDisponible().toFixed(2) }}
+                        </p>
+                    </div>
+
+                    <img 
+                        src="/assets/icons/presupuestos/dis-global.svg" 
+                        alt=""
+                        class="h-5 w-5"
+                    >
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <div class="mt-6">
+
+        <div class="flex items-center justify-between gap-3">
+
+            <p class="text-sm text-slate-600">
+                Consumo gobal del mes
+            </p>
+
+            <p
+                class="text-sm font-bold"
+                [class.text-[#087c71]]="porcentajeGlobal() < 80"
+                [class.text-amber-600]="
+                    porcentajeGlobal() >= 80 &&
+                    porcentajeGlobal() < 100
+                "
+            >
+                {{ porcentajeGlobal().toFixed(1) }}% Completado
+            </p>
+        </div>
+
+        <div class="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
+
+            <div
+                class="h-full rounded-full transition-all"
+                [class.bg-[#087c71]]="porcentajeGlobal() < 80"
+                [class.bg-amber-500]="
+                    porcentajeGlobal() >= 80 &&
+                    porcentajeGlobal() < 100
+                "
+                [class.bg-red-600]="porcentajeGlobal() >= 100"
+                [style.width.%]="
+                    porcentajeGlobal() > 100
+                        ? 100
+                        : porcentajeGlobal()
+                "
+            ></div>
+
+        </div>
+
+        <div class="mt-2 flex justify-between text-xs text-slate-400">
+            <span>0%</span>
+            <span>100%</span>
+        </div>
+    </div>
+</section>
+
+<section class="mt-6">
+
+    <div class="flex items-center justify-between gap-4">
+
+        <div>
+
+            <h2 class="text-xl font-bold text-slate-900">
+                Categorías presupuestadas
+            </h2>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Controla el uso de tus límites por categoría. 
+            </p>
+        </div>
+
+        <span
+            class="shrink-0 rounded-full
+                    bg-[#eef1ff]
+                    px-3 py-1
+                    text-xs font-semibold
+                    text-[#087c71]"
+        >
+            {{ totalCategorias() }}
+            {{ totalCategorias() === 1 ? 'categoría' : 'categorías' }}
+        </span>
+    </div>
+
+    @if (isLoading()) {
+
+        <div
+            class="mt-6 rounded-2xl
+                    border border-slate-100
+                    bg-white p-8
+                    text-center">
+
+            <p class="text-sm text-slate-500">
+                Cargando presupuestos... 
+            </p>
+        </div>
+    }
+
+    @else if (errorMessage()) {
+
+        <div
+            class="mt-6 rounded-2xl
+                    border border-red-100
+                    bg-red-50 p-8
+                    text-center"
+        >
+
+            <p class="text-sm text-red-600">
+                {{ errorMessage() }}
+            </p>
+        </div>
+    }
+
+    @else if (presupuestos().length === 0) {
+
+        <div
+            class="mt-6 rounded-2xl
+                    border border-dashed
+                    border-slate-300
+                    bg-white p-10
+                    text-center"
+        >
+
+            <p class="font-semibold text-slate-800">
+                Aun no tienes presupuestos 
+            </p>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Crea un presupuesto para comenzar a controlar
+                tus gastos por categoría. 
+            </p>
+        </div>
+    }
+
+    @else {
+
+        <div
+            class="mt-6 grid
+                    grid-cols-1 gap-4
+                    md:grid-cols-2
+                    xl:grid-cols-3"
+        >
+
+            @for (
+                presupuesto of presupuestos();
+                track presupuesto.id_presupuesto
+            ) {
+
+                <article
+                    class="overflow-hidden
+                        rounded-2xl
+                        border
+                        bg-white
+                        shadow-sm
+                        transition
+                        hover:shadow-md"
+
+                    [class.border-emerald-100]="
+                        +presupuesto.porcentaje_usado < 80
+                    "
+
+                    [class.border-amber-200]="
+                        +presupuesto.porcentaje_usado >= 80 &&
+                        +presupuesto.porcentaje_usado < 100
+                    "
+
+                    [class.border-red-200]="
+                        +presupuesto.porcentaje_usado >= 100
+                    "
+                >
+
+                    <div
+                        class="h-1.5"
+
+                        [class.bg-[#087c71]]="
+                            +presupuesto.porcentaje_usado < 80
+                        "
+
+                        [class.bg-amber-500]="
+                            +presupuesto.porcentaje_usado >= 80 &&
+                            +presupuesto.porcentaje_usado < 100
+                        "
+
+                        [class.bg-red-600]="
+                            +presupuesto.porcentaje_usado >= 100
+                        "
+                    ></div>
+
+
+                    <div class="p-5">
+
+                        <div
+                            class="flex items-start
+                                justify-between gap-4"
+                        >
+
+                            <div
+                                class="flex min-w-0
+                                    items-center gap-3"
+                            >
+
+                                <div
+                                    class="flex h-11 w-11
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-xl
+                                        bg-[#f0f1ff]"
+                                >
+
+                                    <img
+                                        [src]="obtenerIconoCategoria(
+                                            presupuesto.id_categoria
+                                        )"
+                                        [alt]="presupuesto.categoria"
+                                        class="h-5 w-5"
+                                    >
+
+                                </div>
+
+
+                                <h3
+                                    class="truncate
+                                        text-lg font-bold
+                                        text-slate-900"
+                                >
+                                    {{ presupuesto.categoria }}
+                                </h3>
+
+                            </div>
+
+                            <div class="relative">
+
+                                <button
+                                    type="button"
+                                    (click)="alternarMenuPresupuesto(presupuesto.id_presupuesto)"
+                                    class="flex h-9 w-9
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-lg
+                                        text-xl
+                                        text-slate-500
+                                        transition
+                                        hover:bg-slate-100"
+                                    aria-label="Opciones del presupuesto"
+                                >
+                                    ⋮
+                                </button>
+
+                                @if (
+                                    menuPresupuestoAbierto() ===
+                                    presupuesto.id_presupuesto
+                                ) {
+
+                                    <div
+                                        class="absolute right-0 top-10
+                                                z-30
+                                                w-40
+                                                overflow-hidden
+                                                rounded-xl
+                                                border border-slate-200
+                                                bg-white
+                                                py-1
+                                                shadow-xl"
+                                    >
+
+                                        <button
+                                            type="button"
+                                            (click)="abrirEditarPresupuesto(presupuesto)"
+                                            class="flex w-full
+                                                    items-center gap-2
+                                                    px-4 py-2.5
+                                                    text-left
+                                                    text-sm
+                                                    text-slate-700
+                                                    transition
+                                                    hover:bg-slate-50"
+                                        >
+
+                                            <img 
+                                                src="/assets/icons/movimientos/editar.svg" 
+                                                alt=""
+                                                class="h-4 w-4"
+                                            >
+
+                                            Editar 
+
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            (click)="eliminarPresupuesto(presupuesto.id_presupuesto)"
+                                            class="flex w-full
+                                                    items-center gap-2
+                                                    px-4 py-2.5
+                                                    text-left
+                                                    text-sm
+                                                    text-slate-700
+                                                    transition
+                                                    hover:bg-slate-50"
+                                        >
+
+                                            <img 
+                                                src="/assets/icons/movimientos/eliminar.svg" 
+                                                alt=""
+                                                class="h-4 w-4"
+                                            >
+
+                                            Eliminar 
+
+                                        </button>
+                                    </div>
+                                }
+
+                            </div>
+                            
+
+                        </div>
+
+                        <div
+                            class="mt-4
+                                inline-flex
+                                items-center gap-2
+                                rounded-full
+                                px-3 py-1.5"
+
+                            [class.bg-emerald-50]="
+                                +presupuesto.porcentaje_usado < 80
+                            "
+
+                            [class.bg-amber-50]="
+                                +presupuesto.porcentaje_usado >= 80 &&
+                                +presupuesto.porcentaje_usado < 100
+                            "
+
+                            [class.bg-red-50]="
+                                +presupuesto.porcentaje_usado >= 100
+                            "
+                        >
+
+                            <img
+                                [src]="obtenerIconoEstado(
+                                    presupuesto.porcentaje_usado
+                                )"
+                                alt=""
+                                class="h-4 w-4"
+                            >
+
+                            <span
+                                class="text-xs font-semibold"
+
+                                [class.text-[#087c71]]="
+                                    +presupuesto.porcentaje_usado < 80
+                                "
+
+                                [class.text-amber-700]="
+                                    +presupuesto.porcentaje_usado >= 80 &&
+                                    +presupuesto.porcentaje_usado < 100
+                                "
+
+                                [class.text-red-600]="
+                                    +presupuesto.porcentaje_usado >= 100
+                                "
+                            >
+                                {{
+                                    obtenerEstadoPresupuesto(
+                                        presupuesto.porcentaje_usado
+                                    )
+                                }}
+                                ({{ presupuesto.porcentaje_usado }}%)
+                            </span>
+
+                        </div>
+
+                        <div
+                            class="mt-6 flex
+                                items-end
+                                justify-between gap-4"
+                        >
+
+                            <div>
+
+                                <p class="text-xs text-slate-500">
+                                    Gastado
+                                </p>
+
+                                <p
+                                    class="mt-1
+                                        text-2xl font-bold
+                                        text-slate-900"
+                                >
+                                    S/ {{ presupuesto.gastado }}
+                                </p>
+
+                            </div>
+
+
+                            <div class="text-right">
+
+                                <p class="text-xs text-slate-500">
+                                    Disponible
+                                </p>
+
+                                <p
+                                    class="mt-1
+                                        text-xl font-bold"
+
+                                    [class.text-[#087c71]]="
+                                        +presupuesto.disponible >= 0
+                                    "
+
+                                    [class.text-red-600]="
+                                        +presupuesto.disponible < 0
+                                    "
+                                >
+                                    S/ {{ presupuesto.disponible }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="mt-4 h-2.5
+                                overflow-hidden
+                                rounded-full
+                                bg-slate-200"
+                        >
+
+                            <div
+                                class="h-full rounded-full
+                                    transition-all"
+
+                                [class.bg-[#087c71]]="
+                                    +presupuesto.porcentaje_usado < 80
+                                "
+
+                                [class.bg-amber-500]="
+                                    +presupuesto.porcentaje_usado >= 80 &&
+                                    +presupuesto.porcentaje_usado < 100
+                                "
+
+                                [class.bg-red-600]="
+                                    +presupuesto.porcentaje_usado >= 100
+                                "
+
+                                [style.width.%]="
+                                    +presupuesto.porcentaje_usado > 100
+                                        ? 100
+                                        : +presupuesto.porcentaje_usado
+                                "
+                            ></div>
+
+                        </div>
+
+                        <div
+                            class="mt-2 flex
+                                items-center
+                                justify-between
+                                gap-3"
+                        >
+
+                            <p class="text-xs text-slate-500">
+                                Presupuestado:
+                                S/ {{ presupuesto.monto_limite }}
+                            </p>
+
+                            <p
+                                class="text-xs font-bold"
+
+                                [class.text-[#087c71]]="
+                                    +presupuesto.porcentaje_usado < 80
+                                "
+
+                                [class.text-amber-600]="
+                                    +presupuesto.porcentaje_usado >= 80 &&
+                                    +presupuesto.porcentaje_usado < 100
+                                "
+
+                                [class.text-red-600]="
+                                    +presupuesto.porcentaje_usado >= 100
+                                "
+                            >
+                                {{ presupuesto.porcentaje_usado }}%
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </article>
+            }
+        </div>
+    }
+</section>
+@if (formularioAbierto()) {
+
+    <div class="fixed inset-0 z-50
+                flex items-center justify-center
+                overflow-hidden
+                bg-black/40
+                p-4"
+    >
+
+        <div
+            class="w-full max-w-xl
+                    max-h-[calc(100dvh-2rem)]
+                    overflow-y-auto
+                    rounded-3xl
+                    bg-white
+                    shadow-2xl
+                    [scrollbar-width:none]
+                    [-ms-overflow-style:none]
+                    [&::-webkit-scrollbar]:hidden"
+        >
+
+            <div class="h-2 rounded-t-3xl bg-[#087c71]"></div>
+
+            <div class="p-6 sm:p-8">
+
+                <div class="flex items-start justify-between gap-4">
+
+                    <div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+
+                            <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">
+
+                                @if (modoEdicion()) {
+                                    Editar presupuesto
+                                } @else {
+                                    Nuevo presupuesto 
+                                }
+                            </h2>
+
+                            <span
+                                class="rounded-full
+                                        bg-[#eef1ff]
+                                        px-3 py-1
+                                        text-sm font-medium
+                                        text-[#087c71]"
+                            >
+                                Plan mensual 
+                            </span>
+
+                        </div>
+
+                        <p class="mt-2 text-sm text-slate-500">
+                            Define un límite de gasto para una categoria. 
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        (click)="cerrarFormulario()"
+                        class="flex h-10 w-10
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-xl
+                                transition
+                                hover:bg-slate-100"
+                        aria-label="Cerrar formulario"
+                    >
+
+                        <img 
+                            src="/assets/icons/movimientos/cerrar.svg" 
+                            alt=""
+                            class="h-5 w-5"
+                        >
+                    </button>
+
+                </div>
+
+                <form 
+                    [formGroup]="presupuestoForm"
+                    (ngSubmit)="guardarPresupuesto()"
+                >
+
+                    <div class="mt-8">
+
+                        <label
+                            class="mb-3 block
+                                    text-sm font-semibold
+                                    uppercase tracking-wide
+                                    text-slate-700"
+                        >
+                            Categoria
+                        </label>
+
+                        <div class="relative">
+
+                            <img 
+                                src="/assets/icons/movimientos/categorias.svg" 
+                                alt=""
+                                class="pointer-events-none
+                                        absolute left-4 top-1/2
+                                        h-5 w-5
+                                        -translate-y-1/2"
+                            >
+
+                            <select
+                                formControlName="idCategoria"
+                                class="h-14 w-full
+                                        appearance-none
+                                        rounded-2xl
+                                        border border-transparent
+                                        bg-[#f0f1ff]
+                                        pl-12 pr-10
+                                        text-base font-semibold
+                                        text-slate-800
+                                        outline-none
+                                        transition
+                                        focus:border-[#087c71]
+                                        "
+                            >
+                                <option [ngValue]="null">
+                                    Selecciona una categoria
+                                </option>
+
+                                @for (
+                                    categoria of categoriasGasto();
+                                    track categoria.id_categoria
+                                ) {
+
+                                    <option [ngValue]="categoria.id_categoria">
+                                        {{ categoria.nombre }}
+                                    </option>
+
+                                }
+
+                            </select>
+
+                            <img 
+                                src="/assets/icons/movimientos/flecha-select.svg" 
+                                alt=""
+                                class="pointer-events-none
+                                        absolute right-4 top-1/2
+                                        h-4 w-4
+                                        -translate-y-1/2"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-7">
+
+                        <label
+                            class="mb-3 block
+                                    text-sm font-semibold
+                                    uppercase tracking-wide
+                                    text-slate-700"
+                        >
+                            Monto límite
+                        </label>
+
+                        <div
+                            class="flex h-20
+                                    items-center
+                                    rounded-2xl
+                                    bg-[#f0f1ff]
+                                    px-5"
+                        >
+
+                            <span
+                                class="shrink-0
+                                        text-2xl font-bold
+                                        text-[#087c71]
+                                        sm:text-3xl"
+                            >
+                                S/
+                            </span>
+
+                            <input 
+                                type="number"
+                                formControlName="montoLimite"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="0.00"
+                                class="min-w-0 flex-1
+                                        bg-transparent
+                                        px-3
+                                        text-3xl font-bold
+                                        text-slate-900
+                                        outline-none
+                                        sm:text-4xl
+                                        [appearance:textfield]
+                                       [&::-webkit-inner-spin-button]:appearance-none
+                                       [&::-webkit-outer-spin-button]:appearance-none"
+                            >
+
+                            <span
+                                class="shrink-0
+                                        rounded-lg
+                                        bg-[#e4e7ff]
+                                        px-3 py-1.5
+                                        text-sm font-semibold
+                                        text-slate-700"
+                            >
+                                PEN 
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-7">
+
+                        <label
+                            class="mb-3 block
+                                    text-sm font-semibold
+                                    uppercase tracking-wide
+                                    text-slate-700"
+                        >
+
+                            Periodo 
+                        </label>
+
+                        <div
+                            class="flex h-14
+                                    items-center gap-3
+                                    rounded-2xl
+                                    bg-[#f0f1ff]
+                                    px-4"
+                        >
+
+                            <img 
+                                src="/assets/icons/dashboard/calendar.svg" 
+                                alt=""
+                                class="h-5 w-5 shrink-0"
+                            >
+
+                            <span class="text-base font-semibold text-slate-800">
+                                {{ periodoTexto }}
+                            </span>
+
+                        </div>
+
+                        <p class="mt-2 text-xs text-slate-400">
+                            El presupuesto se aplicará al periodo seleccionado. 
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="mt-8 flex
+                                gap-3
+                                border-t border-slate-100
+                                pt-6
+                                sm:justify-end"
+                    >
+
+                        <button
+                            type="button"
+                            (click)="cerrarFormulario()"
+                            class="h-12 flex-1
+                                    rounded-xl
+                                    bg-[#f0f1ff]
+                                    px-6
+                                    text-sm font-semibold
+                                    text-slate-700
+                                    transition
+                                    hover:bg-slate-200
+                                    sm:flex-none"
+                        >
+                            Cancelar 
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="flex h-12 flex-1
+                                    items-center
+                                    justify-center
+                                    gap-2
+                                    rounded-xl
+                                    bg-[#087c71]
+                                    px-6
+                                    text-sm font-semibold
+                                    text-white
+                                    transition
+                                    hover:bg-[#066a61]
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-50
+                                    sm:flex-none"
+                        >
+                            <img 
+                                src="/assets/icons/movimientos/check-guardar.svg" 
+                                alt=""
+                                class="h-5 w-5 brightness-0 invert"
+                            >
+
+                            @if (modoEdicion()) {
+                                Guardar cambios 
+                            } @else {
+                                Guardar presupuesto 
+                            }
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+<section
+    class="mt-6 rounded-2xl
+            border border-slate-100
+            bg-white
+            p-5
+            shadow-sm
+            sm:p-6"
+>
+
+    <div class="flex flex-col gap-5
+                lg:flex-row
+                lg:items-start
+                lg:justify-between"
+    >
+
+        <div class="lg:max-w-[320px]">
+
+            <h2 class="text-lg font-bold text-slate-900">
+                Guía del sistema de alartas
+            </h2>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Identifica rápidamente el estado de cada presupuesto
+                según su nivel de consumo. 
+            </p>
+
+        </div>
+
+        <div
+            class="grid grid-cols-2 gap-3 lg:flex-1 lg:grid-cols-3"
+            
+        >
+
+            <div class="rounded-xl bg-emerald-50 p-3 sm:p-4">
+
+                <div class="flex items-start gap-3">
+
+                    <img 
+                        src="/assets/icons/presupuestos/success.svg" 
+                        alt=""
+                        class="mt-0.5 h-5 w-5 shrink-0"
+                    >
+
+                    <div>
+
+                        <p class="text-sm font-semibold text-[#087c71]">
+                            Normal
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-600">
+                            0% - 79%
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-500">
+                            Dentro del límite
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="rounded-xl bg-amber-50 p-3 sm:p-4">
+
+                <div class="flex items-start gap-3">
+
+                    <img 
+                        src="/assets/icons/presupuestos/error.svg"
+                        alt=""
+                        class="mt-0.5 h-5 w-5 shrink-0"
+                    >
+
+                    <div>
+
+                        <p class="text-sm font-semibold text-amber-700">
+                            Advertencia
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-600">
+                            80% - 99%
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-500">
+                            Cerca del límite
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-span-2
+                        w-full
+                        max-w-[220px]
+                        justify-self-center
+                        rounded-xl
+                        bg-red-50
+                        p-3
+                        sm:p-4
+                        lg:col-span-1
+                        lg:max-w-none
+                        ">
+
+                <div class="flex items-start gap-3">
+
+                    <img 
+                        src="/assets/icons/presupuestos/warning.svg"
+                        alt=""
+                        class="mt-0.5 h-5 w-5 shrink-0"
+                    >
+
+                    <div>
+
+                        <p class="text-sm font-semibold text-red-600">
+                            Superado
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-600">
+                            100% o más 
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-500">
+                            Límite excedido
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+</section>
