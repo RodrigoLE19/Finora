@@ -1,1 +1,601 @@
-<p>statistics works!</p>
+<section class="w-full">
+
+    <div
+        class="flex flex-col gap-5
+                lg:flex-row
+                lg:items-start
+                lg:justify-between"
+    >
+
+        <div>
+
+            <p
+                class="text-xs font-semibold
+                        uppercase tracking-wide
+                        text-[#087c71]"
+            >
+                Métricas y diagnóstico
+            </p>
+
+            <h1 class="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">
+                Estadísticas
+            </h1>
+
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                Comprende cómo se comportan tus finanzas
+                mediante métricas y compraciones mensuales.
+            </p>
+
+        </div>
+
+        <div class="relative w-fit">
+
+            <button
+                type="button"
+                (click)="alternarSelectorMes()"
+                class="flex h-11
+                        items-center gap-3
+                        rounded-xl
+                        border border-slate-200
+                        bg-white
+                        px-4
+                        text-left
+                        shadow-sm
+                        transition
+                        hover:border-[#087c71]"
+            >
+
+                <img 
+                    src="/assets/icons/dashboard/calendar.svg" 
+                    alt=""
+                    class="h-5 w-5 shrink-0"
+                >
+
+                <span class="text-sm font-semibold text-slate-800">
+                    {{ periodoTexto }}
+                </span>
+
+                <span class="text-xs text-slate-400">
+                    ▼
+                </span>
+
+            </button>
+
+            @if (selectorMesAbierto()) {
+
+                <div
+                    class="fixed inset-0 z-40"
+                    (click)="cerrarSelectorMes()"
+                ></div>
+
+                <div
+                    class="absolute left-0 top-12
+                           z-50
+                           w-[280px]
+                           max-w-[calc(100vw-3rem)]
+                           rounded-2xl
+                           border border-slate-200
+                           bg-white
+                           p-4
+                           shadow-xl
+                           sm:left-auto
+                           sm:right-0"
+                >
+                    <div
+                        class="flex items-center
+                               justify-between"
+                    >
+
+                        <button
+                            type="button"
+                            (click)="cambiarAnioSelector(-1)"
+                            class="flex h-9 w-9
+                                   items-center justify-center
+                                   rounded-lg
+                                   text-xl text-slate-500
+                                   hover:bg-slate-100"
+                        >
+                            ‹
+                        </button>
+
+                        <span
+                            class="font-semibold
+                                   text-slate-900"
+                        >
+                            {{ anioSelector() }}
+                        </span>
+
+                        <button
+                            type="button"
+                            (click)="cambiarAnioSelector(1)"
+                            class="flex h-9 w-9
+                                   items-center justify-center
+                                   rounded-lg
+                                   text-xl text-slate-500
+                                   hover:bg-slate-100"
+                        >
+                            ›
+                        </button>
+
+                    </div>
+
+                    <div
+                        class="mt-4
+                               grid grid-cols-3 gap-2"
+                    >
+
+                        @for (
+                            nombreMes of nombresMesesCortos;
+                            track $index
+                        ) {
+
+                            <button
+                                type="button"
+                                (click)="seleccionarMes($index + 1)"
+                                class="rounded-lg
+                                    px-3 py-2
+                                    text-sm font-medium
+                                    transition
+                                    hover:bg-[#eaf8f6]"
+
+                                [class.bg-[#087c71]]="
+                                    mes() === $index + 1 &&
+                                    anio() === anioSelector()
+                                "
+
+                                [class.text-white]="
+                                    mes() === $index + 1 &&
+                                    anio() === anioSelector()
+                                "
+                            >
+                                {{ nombreMes }}
+                            </button>
+                        }
+
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+    @if (isLoading()) {
+
+        <div
+            class="mt-6 rounded-2xl
+                    border border-slate-100
+                    bg-white
+                    p-8 text-center"
+        >
+            <p class="text-sm text-slate-500">
+                Cargando estadísticas... 
+            </p>
+        </div>
+    }
+
+    @else if (errorMessage()) {
+
+        <div
+            class="mt-6 rounded-2xl
+                   border border-red-100
+                   bg-red-50
+                   p-8 text-center"
+        >
+            <p class="text-sm text-red-600">
+                {{ errorMessage() }}
+            </p>
+        </div>
+    }
+
+    @else if (estadisticas(); as datos) {
+
+        <section
+            class="mt-6
+                    overflow-hidden
+                    rounded-3xl
+                    border border-slate-100
+                    bg-white
+                    p-5
+                    shadow-sm
+                    sm:p-6"
+        >
+
+            <div
+                class="flex flex-col gap-6
+                        lg:flex-row
+                        lg:items-center
+                        lg:justify-between"
+            >
+                <div class="max-w-2xl">
+
+                    <span
+                        class="inline-flex
+                                rounded-full
+                                px-3 py-1.5
+                                text-xs font-semibold"
+                        [class.bg-red-50]="
+                            variacionMensual() > 0
+                        "
+
+                        [class.text-red-600]="
+                            variacionMensual() > 0
+                        "
+
+                        [class.bg-emerald-50]="
+                            variacionMensual() <= 0
+                        "
+
+                        [class.text-[#087c71]]="
+                            variacionMensual() <= 0
+                        "
+                    >
+                        Comparación con el mes anterior
+                    </span>
+
+                    <h2
+                        class="mt-4
+                                text-xl font-bold
+                                leading-8
+                                text-slate-900
+                                sm:text-2xl"
+                    >
+                        {{ mensajeComparacion() }}
+                    </h2>
+
+                    <p class="mt-2 text-sm leading-6 text-slate-500">
+                        Esta comparación utiliza tus gastos registrados
+                        para el periodo seleccionado.
+                    </p>
+
+                </div>
+
+                <div
+                    class="grid grid-cols-3 gap-2
+                            sm:gap-3
+                            lg:min-w-[520px]"
+                >
+                    <div class="rounded-2xl bg-[#f0f1ff] p-4">
+
+                        <p class="text-xs text-slate-500">
+                            Gastos este mes
+                        </p>
+
+                        <p class="mt-2 text-xl font-bold text-slate-900">
+                            S/ 
+                            {{ formatearMonto(datos.comparacionMensual.mes_actual.gastos) }}
+                        </p>
+
+                    </div>
+
+                    <div class="rounded-2xl bg-slate-50 p-4">
+
+                        <p class="text-xs text-slate-500">
+                            Mes anterior
+                        </p>
+
+                        <p class="mt-2 text-xl font-bold text-slate-900">
+                            S/ 
+                            {{ formatearMonto(datos.comparacionMensual.mes_anterior.gastos) }}
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="rounded-2xl
+                               p-4"
+
+                        [class.bg-red-50]="
+                            variacionMensual() > 0
+                        "
+
+                        [class.bg-emerald-50]="
+                            variacionMensual() <= 0
+                        "
+                    >
+                        <p class="text-xs text-slate-500">
+                            Variación 
+                        </p>
+
+                        <p
+                            class="mt-2
+                                   text-xl font-bold"
+
+                            [class.text-red-600]="
+                                variacionMensual() > 0
+                            "
+
+                            [class.text-[#087c71]]="
+                                variacionMensual() <= 0
+                            "
+                        >
+
+                            @if (variacionMensual() > 0) {
+                                +
+                            }
+
+                            {{ variacionMensual().toFixed(2) }}%
+                        </p>
+
+                    </div>
+
+                </div>
+                
+            </div>
+
+        </section>
+
+        <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+            <section
+                class="rounded-3xl
+                        border border-slate-100
+                        bg-white
+                        p-5
+                        shadow-sm
+                        sm:p-6"
+            >
+
+                <div>
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Gastos por categoria 
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Distribución de tus gastos en
+                        {{ periodoTexto }}.
+                    </p>
+
+                </div>
+
+                @if (datos.gastosPorCategoria.length > 0) {
+
+                    <div
+                        class="relative
+                                mx-auto mt-6
+                                h-[260px]
+                                w-full
+                                max-u-[320px]"
+                    >
+                        <canvas
+                            #gastosCategoriaChart
+                        ></canvas>
+
+                        <div
+                            class="pointer-events-none
+                                    absolute inset-0
+                                    flex items-center
+                                    justify-center"
+                        >
+                            <div class="text-center">
+
+                                <p class="text-xs font-medium uppercase text-slate-500">
+                                    Total gastado 
+                                </p>
+
+                                <p class="mt-1 text-xl font-bold text-slate-900">
+                                    S/ {{ totalGastosCategoria().toFixed(2) }}
+                                </p>
+
+                                <p class="mt-1 text-xs font-medium text-[#087c71]">
+                                    100% categorizado 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                        @for (
+                            gasto of datos.gastosPorCategoria;
+                            track gasto.categoria
+                        ) {
+
+                            <div
+                                class="flex items-center
+                                        justify-between gap-3
+                                        rounded-xl
+                                        bg-[#f8f8fc]
+                                        px-4 py-3"
+                            >
+
+                                <div class="flex min-w-0 items-center gap-2">
+
+                                    <span
+                                        class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                        [style.background-color]="
+                                            obtenerColorCategoria(
+                                                gasto.categoria
+                                                )
+                                            "
+                                    ></span>
+
+                                    <span class="truncate text-sm font-medium text-slate-700">
+                                        {{ gasto.categoria }}
+                                    </span>
+
+                                </div>
+
+                                <div class="shrink-0 text-right">
+
+                                    <p class="text-sm font-semibold text-slate-900">
+                                        S/ {{ formatearMonto(gasto.total) }}
+                                    </p>
+
+                                    <p class="mt-0.5 text-xs text-slate-500">
+                                        ({{ 
+                                            obtenerPorcentajeCategoria(
+                                                gasto.total)
+                                                .toFixed(1) 
+                                        }}%)
+                                    </p>
+
+                                </div>
+                                
+                            </div>
+
+                        }
+
+                    </div>
+
+                } @else {
+
+                    <div class="mt-6 rounded-2xl bg-slate-50 p-8 text-center">
+
+                        <p class="text-sm text-slate-500">
+                            No hay gastos registrados para este periodo.
+                        </p>
+
+                    </div>
+
+                }
+
+            </section>
+
+            <section
+                class="rounded-3xl
+                        border border-slate-100
+                        bg-white
+                        p-5
+                        shadow-sm
+                        sm:p-6"
+            >
+
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Ingresos vs Gastos
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Comparación mensual de tus ingresos y gastos.
+                    </p>
+                </div>
+
+                @if (datos.evolucionMensual.length > 0) {
+
+                    <div class="mt-6 h-[340px] w-full">
+
+                        <canvas
+                            #ingresosGastosChart
+                        ></canvas>
+                    </div>
+
+                    <div class="mt-5 grid grid-cols-2 gap-2">
+
+                        <div class="rounded-xl bg-emerald-50 p-4">
+
+                            <p class="text-xs text-slate-500">
+                                Ingresos del periodo 
+                            </p>
+
+                            <p class="mt-2 text-lg font-bold text-[#087c71]">
+                                S/ 
+                                {{ formatearMonto(datos.ingresosVsGastos.ingresos) }}
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl bg-red-50 p-4">
+
+                            <p class="text-xs text-slate-500">
+                                Gastos del periodo 
+                            </p>
+
+                            <p class="mt-2 text-lg font-bold text-red-600">
+                                S/ 
+                                {{ formatearMonto(datos.ingresosVsGastos.gastos) }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                } @else {
+
+                    <div class="mt-6 rounded-2xl bg-slate-50 p-8 text-center">
+
+                        <p class="text-sm text-slate-500">
+                            No hay datos suficientes para comparar. 
+                        </p>
+
+                    </div>
+
+                }
+
+            </section>
+
+        </div>
+
+        <section
+            class="mt-6
+                    rounded-3xl
+                    border border-slate-100
+                    bg-white
+                    p-5
+                    shadow-sm
+                    sm:p-6"
+        >
+
+            <div
+                class="flex flex-col gap-2
+                        sm:flex-row
+                        sm:items-start
+                        sm:justify-between"
+            >
+                <div>
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        Evolución mensual del balance
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Diferencia entre tus ingresos y gastos 
+                    </p>
+
+                </div>
+
+                @if (datos.evolucionMensual.length > 0) {
+
+                    <div
+                        class="w-fit
+                                rounded-full
+                                bg-emerald-50
+                                px-3 py-1.5
+                                text-xs font-semibold
+                                text-[#076c71]"
+                    >
+                        Balance actual:
+                        S/ {{ balanceActual().toFixed(2) }}
+                    </div>
+
+                }
+
+            </div>
+
+            @if (datos.evolucionMensual.length > 0) {
+
+                <div class="mt-6 h-[340px] w-full">
+
+                    <canvas
+                        #balanceChart
+                    ></canvas>
+                </div>
+            } @else {
+
+                <div class="mt-6 rounded-2xl bg-slate-50 p-8 text-center">
+
+                    <p class="text-sm text-slate-500">
+                        No hay datos suficientes para mostrar la evolución. 
+                    </p>
+
+                </div>
+
+            }
+
+        </section>
+
+    }
+
+</section>
