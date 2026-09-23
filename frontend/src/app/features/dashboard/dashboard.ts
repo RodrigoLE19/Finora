@@ -308,6 +308,29 @@ export class Dashboard implements OnDestroy {
     this.cargarPeriodo();
   }
 
+  calcularDisponible(
+    limite: string | number,
+    gastado: string | number
+  ): string {
+
+    const disponible =
+      Number(limite) - Number(gastado);
+
+    return Math.max(disponible, 0).toFixed(2);
+  }
+
+
+  calcularExcedido(
+    limite: string | number,
+    gastado: string | number
+  ): string {
+
+    const excedido =
+      Number(gastado) - Number(limite);
+
+    return Math.max(excedido, 0).toFixed(2);
+  }
+
 
   crearGraficoGastos(
     distribucion: DistribucionGasto[]
