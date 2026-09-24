@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
-export const API_URL = 'http://localhost:3000/api';
+export const API_URL = 'https://finora-backend-bu19.onrender.com/api';
 
 @Injectable({
   providedIn: 'root',
