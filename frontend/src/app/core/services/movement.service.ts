@@ -7,7 +7,7 @@ import {
     MovimientosResponse,
 
  } from "../../models/movement.model";
-
+import { API_URL } from "./api";
 
 
 @Injectable({
@@ -16,7 +16,7 @@ import {
 export class MovementService {
 
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:3000/api/movimientos';
+    private apiUrl = `${API_URL}/movimientos`;
 
     obtenerMovimientos() {
         return this.http.get<MovimientosResponse>(

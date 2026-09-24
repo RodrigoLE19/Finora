@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { ActualizarGastoRecurrenteRequest, CrearGastoRecurrenteRequest, EliminarGastoRecurrenteResponse, GastoRecurrenteResponse, GastosRecurrentesResponse } from "../../models/recurring-expense.model";
-
+import { API_URL } from "./api";
 
 
 @Injectable({
@@ -10,7 +10,7 @@ import { ActualizarGastoRecurrenteRequest, CrearGastoRecurrenteRequest, Eliminar
 export class RecurringExpenseService {
 
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:3000/api/gastos-recurrentes';
+    private apiUrl = `${API_URL}/gastos-recurrentes`;
 
     obtenerGastosRecurrentes() {
         return this.http.get<GastosRecurrentesResponse>(this.apiUrl);

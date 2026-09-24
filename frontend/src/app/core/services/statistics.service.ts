@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { EstadisticasResponse } from "../../models/statistics.model";
-
+import { API_URL } from "./api";
 
 
 @Injectable({
@@ -11,7 +11,7 @@ export class StatisticsService {
 
     private http = inject(HttpClient);
 
-    private apiUrl = 'http://localhost:3000/api/estadisticas';
+    private apiUrl = `${API_URL}/estadisticas`;
 
 
     obtenerEstadisticas(

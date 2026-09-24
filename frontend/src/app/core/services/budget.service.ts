@@ -7,6 +7,7 @@ import {
     PresupuestoResponse,
     PresupuestosResponse 
 } from "../../models/budget.model";
+import { API_URL } from "./api";
 
 
 @Injectable({
@@ -15,7 +16,7 @@ import {
 export class BudgetService {
 
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:3000/api/presupuestos';
+    private apiUrl = `${API_URL}/presupuestos`;
 
     obtenerPresupuestos(mes: number, anio: number) {
 

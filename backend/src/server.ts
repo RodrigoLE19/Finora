@@ -12,12 +12,12 @@ import statisticsRoutes from './routes/statistics.routes';
 
 const app = express();
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 testDatabaseConecction();
 
 app.use(cors({
-    origin: `http://localhost:4200`
+    origin: process.env.FRONTEND_URL || `http://localhost:4200`
 }));
 
 app.use(express.json());
@@ -32,5 +32,5 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/estadisticas', statisticsRoutes);
 
 app.listen(PORT, () => {
-    console.log(`Servidor ejecutandose en http://localhost:${PORT}`);
+    console.log(`Servidor ejecutandose en el puerto ${PORT}`);
 });

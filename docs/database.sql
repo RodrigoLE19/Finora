@@ -31,7 +31,7 @@ CREATE TABLE movimientos (
     id_movimiento INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_usuario INTEGER NOT NULL,
     id_categoria INTEGER NOT NULL,
-    id_gasto_recurrente INTEGER
+    id_gasto_recurrente INTEGER,
     tipo VARCHAR(10) NOT NULL,
     monto NUMERIC(12,2) NOT NULL,
     descripcion VARCHAR(255),
