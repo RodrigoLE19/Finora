@@ -1,5 +1,5 @@
 import { pool } from "../config/database"
-
+import { createMovement } from "./movement.service";
 
 export const createRecurringExpense = async (
     idUsuario: number,
@@ -68,7 +68,7 @@ export const getRecurringExpensesByUser = async (
 ) => {
 
     const resultado = await pool.query(
-        `SELECT
+        `SELECT 
             gr.id_gasto_recurrente,
             gr.id_categoria,
             c.nombre AS categoria,
@@ -77,13 +77,34 @@ export const getRecurringExpensesByUser = async (
             gr.frecuencia,
             gr.dia_pago,
             gr.activo,
-            gr.fecha_creacion
+            gr.fecha_creacion,
+
+            EXISTS (
+                SELECT 1
+                FROM movimientos m
+                WHERE m.id_usuario = gr.id_usuario
+                    AND m.id_gasto_recurrente = gr.id_gasto_recurrente
+                    AND m.tipo = 'GASTO'
+                    AND EXTRACT(MONTH FROM m.fecha) =
+                        EXTRACT(MONTH FROM CURRENT_DATE)
+                    AND EXTRACT(YEAR FROM m.fecha) =
+                        EXTRACT(YEAR FROM CURRENT_DATE)
+            ) AS pagado_mes
+
         FROM gastos_recurrentes gr
+
         INNER JOIN categorias c
             ON gr.id_categoria = c.id_categoria
+
         WHERE gr.id_usuario = $1
-        ORDER BY gr.activo DESC, gr.dia_pago, gr.descripcion`,
-        [idUsuario]
+
+        ORDER BY
+            gr.activo DESC,
+            gr.dia_pago,
+            gr.descripcion`,
+        [
+            idUsuario
+        ]
     );
 
     return resultado.rows;
@@ -178,3 +199,70 @@ export const deleteRecurringExpense = async (
 
     return resultado.rows[0];
 }
+
+export const registerRecurringPayment = async (
+    idGastoRecurrente: number,
+    idUsuario: number,
+    fecha: string
+) => {
+
+    const recurrenteResult = await pool.query(
+        `SELECT
+            id_gasto_recurrente,
+            id_categoria,
+            descripcion,
+            monto,
+            activo
+        FROM gastos_recurrentes
+        WHERE id_gasto_recurrente = $1
+            AND id_usuario = $2`,
+        [
+            idGastoRecurrente,
+            idUsuario
+        ]
+    );
+
+    if (recurrenteResult.rows.length === 0) {
+        throw new Error('RECURRING_EXPENSE_NOT_FOUND');
+    }
+
+    const recurrente = recurrenteResult.rows[0];
+
+    if (!recurrente.activo) {
+        throw new Error('RECURRING_EXPENSE_INACTIVE');
+    }
+
+    const pagoExistenteResult = await pool.query(
+        `SELECT id_movimiento
+        FROM movimientos
+        WHERE id_usuario = $1
+            AND id_gasto_recurrente = $2
+            AND tipo = 'GASTO'
+            AND EXTRACT(MONTH FROM fecha) =
+                EXTRACT(MONTH FROM $3::date)
+            AND EXTRACT(YEAR FROM fecha) =
+                EXTRACT(YEAR FROM $3::date)
+        LIMIT 1`,
+        [
+            idUsuario,
+            idGastoRecurrente,
+            fecha
+        ]
+    );
+
+    if (pagoExistenteResult.rows.length > 0) {
+        throw new Error('RECURRING_EXPENSE_ALREADY_PAID');
+    }
+
+    const movimiento = await createMovement(
+        idUsuario,
+        recurrente.id_categoria,
+        'GASTO',
+        Number(recurrente.monto),
+        recurrente.descripcion,
+        fecha,
+        idGastoRecurrente
+    );
+
+    return movimiento;
+};
