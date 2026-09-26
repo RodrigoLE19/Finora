@@ -1,6 +1,14 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { ActualizarGastoRecurrenteRequest, CrearGastoRecurrenteRequest, EliminarGastoRecurrenteResponse, GastoRecurrenteResponse, GastosRecurrentesResponse } from "../../models/recurring-expense.model";
+import { 
+    ActualizarGastoRecurrenteRequest, 
+    CrearGastoRecurrenteRequest, 
+    EliminarGastoRecurrenteResponse, 
+    GastoRecurrenteResponse, 
+    GastosRecurrentesResponse,
+    RegistrarPagoRecurrenteRequest,
+    RegistrarPagoRecurrenteResponse 
+} from "../../models/recurring-expense.model";
 import { API_URL } from "./api";
 
 
@@ -37,6 +45,16 @@ export class RecurringExpenseService {
     ) {
         return this.http.delete<EliminarGastoRecurrenteResponse>(
             `${this.apiUrl}/${idGastoRecurrente}`
+        );
+    }
+
+    registrarPago(
+        idGastoRecurrente: number,
+        datos: RegistrarPagoRecurrenteRequest
+    ) {
+        return this.http.post<RegistrarPagoRecurrenteResponse>(
+            `${this.apiUrl}/${idGastoRecurrente}/registrar-pago`,
+            datos
         );
     }
 

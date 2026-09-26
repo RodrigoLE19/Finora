@@ -97,7 +97,7 @@ export class RecurringExpenses implements OnInit {
   totalComprometido = computed(() => {
 
     return this.gastosRecurrentes()
-      .filter(gasto => gasto.activo)
+      .filter(gasto => gasto.activo  && !gasto.pagado_mes)
       .reduce(
         (total, gasto) =>
           total + Number(gasto.monto),
@@ -313,6 +313,94 @@ export class RecurringExpenses implements OnInit {
           });
         }
       });
+  }
+
+  registrarPago(gasto: GastoRecurrente) {
+
+    if (!gasto.activo) {
+        Swal.fire({
+            title: 'Gasto inactivo',
+            text: 'Primero debes activar este gasto recurrente.',
+            icon: 'warning',
+            confirmButtonColor: '#087c71'
+        });
+
+        return;
+    }
+
+    if (gasto.pagado_mes) {
+        Swal.fire({
+            title: 'Pago ya registrado',
+            text: 'Este gasto recurrente ya fue pagado este mes.',
+            icon: 'info',
+            confirmButtonColor: '#087c71'
+        });
+
+        return;
+    }
+
+    Swal.fire({
+        title: '¿Registrar pago?',
+        text: `Se registrará S/ ${Number(gasto.monto).toFixed(2)} como gasto de ${gasto.descripcion}.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#087c71',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Sí, registrar pago',
+        cancelButtonText: 'Cancelar'
+    }).then((resultado) => {
+
+        if (!resultado.isConfirmed) {
+            return;
+        }
+
+        const hoy = new Date();
+
+        const fecha = [
+            hoy.getFullYear(),
+            String(hoy.getMonth() + 1).padStart(2, '0'),
+            String(hoy.getDate()).padStart(2, '0')
+        ].join('-');
+
+        this.recurringExpenseService
+            .registrarPago(
+                gasto.id_gasto_recurrente,
+                { fecha }
+            )
+            .subscribe({
+
+                next: () => {
+
+                    Swal.fire({
+                        title: 'Pago registrado',
+                        text: 'El gasto se agregó correctamente a tus movimientos.',
+                        icon: 'success',
+                        confirmButtonColor: '#087c71'
+                    });
+
+                    this.cargarGastosRecurrentes();
+                },
+
+                error: (error) => {
+
+                    console.error(
+                        'Error al registrar pago recurrente:',
+                        error
+                    );
+
+                    Swal.fire({
+                        title: 'Error',
+                        text:
+                            error.error?.message ||
+                            'No se pudo registrar el pago.',
+                        icon: 'error',
+                        confirmButtonColor: '#087c71'
+                    });
+                }
+
+            });
+
+    });
   }
 
   guardarGastoRecurrente() {
