@@ -1,5 +1,10 @@
 import { Request, Response } from "express"
-import { createRecurringExpense, getRecurringExpensesByUser, updateRecurringExpense, deleteRecurringExpense } from "../services/recurring-expense.service,"
+import { 
+    registerRecurringPayment, 
+    createRecurringExpense, 
+    getRecurringExpensesByUser, 
+    updateRecurringExpense, 
+    deleteRecurringExpense } from "../services/recurring-expense.service,"
 import { json } from "node:stream/consumers";
 
 export const create = async (req: Request, res: Response) => {
@@ -232,3 +237,78 @@ export const remove = async (req: Request, res: Response) => {
         });
     }
 }
+
+export const registerPayment = async (
+    req: Request,
+    res: Response
+) => {
+
+    try {
+
+        const idUsuario = res.locals.usuario.idUsuario;
+        const idGastoRecurrente = Number(req.params.id);
+
+        const { fecha } = req.body;
+
+        if (!idGastoRecurrente) {
+            return res.status(400).json({
+                message: 'ID de gasto recurrente inválido'
+            });
+        }
+
+        if (!fecha) {
+            return res.status(400).json({
+                message: 'La fecha del pago es obligatoria'
+            });
+        }
+
+        const movimiento = await registerRecurringPayment(
+            idGastoRecurrente,
+            idUsuario,
+            fecha
+        );
+
+        return res.status(201).json({
+            message: 'Pago recurrente registrado correctamente',
+            movimiento
+        });
+
+    } catch (error) {
+
+        if (
+            error instanceof Error &&
+            error.message === 'RECURRING_EXPENSE_NOT_FOUND'
+        ) {
+            return res.status(404).json({
+                message: 'Gasto recurrente no encontrado'
+            });
+        }
+
+        if (
+            error instanceof Error &&
+            error.message === 'RECURRING_EXPENSE_INACTIVE'
+        ) {
+            return res.status(400).json({
+                message: 'No puedes registrar el pago de un gasto inactivo'
+            });
+        }
+
+        if (
+            error instanceof Error &&
+            error.message === 'RECURRING_EXPENSE_ALREADY_PAID'
+        ) {
+            return res.status(409).json({
+                message: 'Este gasto recurrente ya fue pagado este mes'
+            });
+        }
+
+        console.error(
+            'Error al registrar pago recurrente:',
+            error
+        );
+
+        return res.status(500).json({
+            message: 'Error interno del servidor'
+        });
+    }
+};
