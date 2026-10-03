@@ -107,6 +107,10 @@ export class Budgets {
   anio = signal(new Date().getFullYear());
   selectorMesAbierto = signal(false);
 
+  guardando = signal(false);
+
+  
+
   anioSelector = signal(
     new Date().getFullYear()
   );
@@ -260,6 +264,10 @@ export class Budgets {
 
   guardarPresupuesto() {
 
+    if (this.guardando()) {
+        return;
+    }
+
     if (this.presupuestoForm.invalid) {
       this.presupuestoForm.markAllAsTouched();
       return;
@@ -288,6 +296,8 @@ export class Budgets {
         mes: this.mes(),
         anio: this.anio()
       };
+
+      this.guardando.set(true);
 
       this.budgetService
         .actualizarPresupuesto(idPresupuesto, datos)
@@ -334,6 +344,9 @@ export class Budgets {
       anio: this.anio()
     };
 
+    
+    this.guardando.set(true);
+    
     this.budgetService
       .crearPresupuesto(datos)
       .subscribe({

@@ -1086,6 +1086,7 @@
 
                         <button
                             type="submit"
+                            [disabled]="presupuestoForm.invalid || guardando()"
                             class="flex h-12 flex-1
                                     items-center
                                     justify-center

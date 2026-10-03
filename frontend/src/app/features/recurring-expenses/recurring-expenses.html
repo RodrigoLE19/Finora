@@ -870,6 +870,7 @@
 
                         <button
                             type="submit"
+                            [disabled]="gastoForm.invalid || guardando()"
                             class="h-12 flex-1
                                     rounded-xl
                                     bg-[#087c71]
@@ -878,7 +879,8 @@
                                     text-white
                                     transition
                                     hover:bg-[#066a61]
-                                    sm:flex-none"
+                                    sm:flex-none disabled:cursor-not-allowed
+                                    disabled:opacity-50"
                         >
                             @if (modoEdicion()) {
                                 Guardar cambios

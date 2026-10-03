@@ -9,9 +9,17 @@ export const authGuard: CanActivateFn = () => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    if (authService.estaAutenticado()) {
+    if (authService.tokenVigente()) {
         return true;
     }
 
-    return router.createUrlTree(['/login']);
+    const teniaToken = !!authService.obtenerToken();
+
+    authService.cerrarSesion();
+
+    return router.createUrlTree(['/login'], {
+        queryParams: teniaToken
+            ? { motivo: 'sesion-expirada' }
+            : {}
+    });
 }

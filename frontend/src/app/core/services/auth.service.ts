@@ -49,4 +49,40 @@ export class AuthService {
         return !!this.obtenerToken();
     }
 
+    tokenVigente(): boolean {
+        const token = this.obtenerToken();
+
+        if (!token) {
+            return false;
+        }
+
+        try {
+            const partes = token.split('.');
+
+            if (partes.length !== 3) {
+                return false;
+            }
+
+            const base64 = partes[1]
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            const contenido = base64.padEnd(
+                Math.ceil(base64.length / 4) * 4,
+                '='
+            );
+
+            const payload = JSON.parse(atob(contenido));
+            const ahora = Date.now() / 1000;
+
+            return (
+                typeof payload.exp === 'number' &&
+                Number.isFinite(payload.exp) &&
+                payload.exp > ahora 
+            );
+        } catch {
+            return false;
+        }
+    }
+
 }

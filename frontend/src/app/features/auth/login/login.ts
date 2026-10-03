@@ -1,10 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -17,11 +17,12 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
 
   private formBuilder = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   isLoading = signal(false);
   errorMessage = signal('');
@@ -38,6 +39,24 @@ export class Login {
     ]]
   });
 
+  ngOnInit(): void {
+    const motivo =  this.route.snapshot.queryParamMap.get('motivo');
+
+    if (motivo === 'sesion-expirada') {
+      Swal.fire({
+        icon: 'info',
+        title: 'Tu sesión ha expirado',
+        text: 'Inicia sesión nuevamente para continuar.'
+      });
+
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { motivo: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true
+      });
+    }
+  }
   togglePassword() {
     this.showPassword.update(valor => !valor);
   }

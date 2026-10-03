@@ -36,6 +36,8 @@ export class RecurringExpenses implements OnInit {
     'TODOS' | 'ACTIVOS' | 'INACTIVOS'
   >('TODOS');
 
+  guardando = signal(false);
+
   gastoForm = this.fb.group({
 
     idCategoria: [
@@ -405,6 +407,9 @@ export class RecurringExpenses implements OnInit {
 
   guardarGastoRecurrente() {
 
+    if (this.guardando()) {
+      return;
+    }
     if (this.gastoForm.invalid) {
       this.gastoForm.markAllAsTouched();
       return;
@@ -438,6 +443,8 @@ export class RecurringExpenses implements OnInit {
         diaPago: Number(valores.diaPago),
         activo: this.gastoEditandoActivo()
       };
+
+      this.guardando.set(true);
 
       this.recurringExpenseService
         .actualizarGastoRecurrente(idGasto, datos)
@@ -483,6 +490,8 @@ export class RecurringExpenses implements OnInit {
       diaPago: Number(valores.diaPago)
     };
 
+    this.guardando.set(true);
+    
     this.recurringExpenseService
       .crearGastoRecurrente(datos)
       .subscribe({

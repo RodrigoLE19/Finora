@@ -1046,49 +1046,37 @@
                         </div>
 
                         <div class="mt-7">
-
                             <label
-                                class="mb-3 block
-                                        text-sm font-semibold
-                                        uppercase tracking-wide
-                                        text-slate-700"
+                                for="fechaMovimiento"
+                                class="mb-3 block text-sm font-semibold
+                                    uppercase tracking-wide text-slate-700"
                             >
-                                Fecha de registro 
-                                
+                                Fecha de registro
                             </label>
 
                             <div
-                                class="flex h-14
-                                        cursor-pointer
-                                        items-center gap-3
-                                        rounded-2xl
-                                        bg-[#f0f1ff]
-                                        px-4"
-                                (click)="fechaInput.showPicker()"
+                                class="flex h-14 items-center gap-3
+                                    rounded-2xl bg-[#f0f1ff] px-4"
                             >
-
-                                <img 
-                                    src="/assets/icons/dashboard/calendar.svg" 
+                                <img
+                                    src="/assets/icons/dashboard/calendar.svg"
                                     alt=""
-                                    class="h-5 w-5 shrink-0"
+                                    class="pointer-events-none h-5 w-5 shrink-0"
                                 >
 
                                 <input
-                                    #fechaInput 
+                                    id="fechaMovimiento"
                                     type="date"
                                     formControlName="fecha"
-                                    class="pointer-events-none
-                                            min-w-0 flex-1
-                                            bg-transparent
-                                            text-base
-                                            text-slate-800
-                                            outline-none
-                                            appearance-none
-                                            [&::-webkit-calendar-picker-indicator]:opacity-0"
+                                    class="h-full min-w-0 flex-1
+                                        cursor-pointer bg-transparent
+                                        text-base text-slate-800 outline-none"
                                 >
-
-
                             </div>
+
+                            <p class="mt-2 text-xs text-slate-500">
+                                Toca el campo para seleccionar la fecha.
+                            </p>
                         </div>
 
                         <div
