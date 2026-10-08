@@ -85,4 +85,18 @@ export class AuthService {
         }
     }
 
+    solicitarRecuperacion(email: string) {
+        return this.http.post<{message: string}>(
+            `${this.apiURL}/forgot-password`,
+            {email}
+        );
+    }
+
+    restablecerPassword(token: string, password: string) {
+        return this.http.post<{message: string}>(
+            `${this.apiURL}/reset-password`,
+            {token, password}
+        );
+    }
+
 }

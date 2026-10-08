@@ -8,6 +8,8 @@ import { Budgets } from './features/budgets/budgets';
 import { RecurringExpenses } from './features/recurring-expenses/recurring-expenses';
 import { Statistics } from './features/statistics/statistics';
 import { authGuard } from './core/guards/auth.guard';
+import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
+import { ResetPassword } from './features/auth/reset-password/reset-password';
 
 export const routes: Routes = [
     {
@@ -22,6 +24,14 @@ export const routes: Routes = [
     {
         path: 'register',
         component: Register
+    },
+    {
+        path: 'forgot-password',
+        component: ForgotPassword
+    },
+    {
+        path: 'reset-password',
+        component: ResetPassword
     },
     {
         path: '',

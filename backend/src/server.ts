@@ -12,6 +12,10 @@ import statisticsRoutes from './routes/statistics.routes';
 
 const app = express();
 
+if (process.env.RENDER === 'true') {
+    app.set('trust proxy', 1);
+}
+
 const PORT = Number(process.env.PORT) || 3000;
 
 testDatabaseConecction();
