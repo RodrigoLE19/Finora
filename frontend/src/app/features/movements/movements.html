@@ -823,6 +823,7 @@
 
                                 <input 
                                     type="number"
+                                    (wheel)="desactivarCambiosPorScroll($event)"
                                     formControlName="monto"
                                     min="0.01"
                                     step="0.01"
@@ -1065,18 +1066,18 @@
                                 >
 
                                 <input
+                                    #fechaMovimientoInput
                                     id="fechaMovimiento"
                                     type="date"
+                                    (click)="mostrarSelectorfecha(fechaMovimientoInput)"
                                     formControlName="fecha"
                                     class="h-full min-w-0 flex-1
                                         cursor-pointer bg-transparent
-                                        text-base text-slate-800 outline-none"
+                                        text-base text-slate-800 outline-none
+                                        [&::-webkit-calendar-picker-indicator]:opacity-0"
                                 >
                             </div>
 
-                            <p class="mt-2 text-xs text-slate-500">
-                                Toca el campo para seleccionar la fecha.
-                            </p>
                         </div>
 
                         <div

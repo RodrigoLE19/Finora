@@ -349,6 +349,26 @@ export class Movements implements OnInit {
     
   }
 
+  desactivarCambiosPorScroll(event: WheelEvent): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input === document.activeElement) {
+      input.blur();
+    }
+  }
+
+  mostrarSelectorfecha(input: HTMLInputElement): void {
+    input.focus();
+
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker();
+      } catch {
+        //
+      }
+    }
+  }
+
   cargarCategorias() {
 
     this.categoryService
