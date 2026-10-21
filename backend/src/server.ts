@@ -20,8 +20,16 @@ const PORT = Number(process.env.PORT) || 3000;
 
 testDatabaseConecction();
 
+const origenesPermitidos = [
+    'http://localhost:4200',
+    'https://finora-rodrigo.netlify.app'
+];
+
+if (process.env.FRONTEND_URL) {
+    origenesPermitidos.push(process.env.FRONTEND_URL);
+}
 app.use(cors({
-    origin: process.env.FRONTEND_URL || `http://localhost:4200`
+    origin: origenesPermitidos
 }));
 
 app.use(express.json());
