@@ -45,7 +45,9 @@ export class Dashboard implements OnDestroy {
 
   private chartGastos?: Chart;
 
-  usuario = this.authService.obtenerUsuario();
+  get usuario() {
+    return this.authService.obtenerUsuario();
+  }
 
   dashboard = signal<DashboardResponse | null>(null);
 

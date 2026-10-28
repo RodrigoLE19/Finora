@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, Usuario } from "../../models/auth.model";
 import { API_URL } from "./api";
+import { tap } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -11,6 +12,23 @@ export class AuthService {
     private http = inject(HttpClient);
 
     private apiURL = `${API_URL}/auth`;
+
+    private usuarioActual = signal<Usuario | null>(null);
+
+    cargarPerfil() {
+        const tokenSolicitado = this.obtenerToken();
+
+        return this.http.get<{
+            message: string;
+            usuario: Usuario;
+        }>(`${this.apiURL}/me`).pipe(
+            tap(response => {
+                if (this.obtenerToken() === tokenSolicitado) {
+                    this.usuarioActual.set(response.usuario);
+                }
+            })
+        );
+    }
 
     login(data: LoginRequest) {
         return this.http.post<LoginResponse>(`${this.apiURL}/login`, data);
@@ -22,7 +40,9 @@ export class AuthService {
 
     guardarSesion(response: LoginResponse) {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('usuario', JSON.stringify(response.usuario));
+        localStorage.removeItem('usuario');
+
+        this.usuarioActual.set(response.usuario);
     }
 
     obtenerToken(){
@@ -30,19 +50,14 @@ export class AuthService {
     }
 
     obtenerUsuario(): Usuario | null {
-        const usuario = localStorage.getItem('usuario');
-
-        if (!usuario) {
-            return null;
-        }
-
-
-        return JSON.parse(usuario);
+        return this.usuarioActual();
     }
 
     cerrarSesion() {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
+
+        this.usuarioActual.set(null);
     }
 
     estaAutenticado(){

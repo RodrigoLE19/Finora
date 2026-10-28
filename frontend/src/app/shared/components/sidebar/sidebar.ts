@@ -13,7 +13,9 @@ export class Sidebar {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  usuario = this.authService.obtenerUsuario();
+  get usuario() {
+    return this.authService.obtenerUsuario();
+  }
 
   menuAbierto = signal(false);
 

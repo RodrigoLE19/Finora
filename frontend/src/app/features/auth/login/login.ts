@@ -56,6 +56,21 @@ export class Login implements OnInit {
         replaceUrl: true
       });
     }
+
+    if (motivo === 'perfil-no-disponible') {
+      Swal.fire({
+          icon: 'error',
+          title: 'No se pudo cargar tu perfil',
+          text: 'Comprueba tu conexión e inténtalo nuevamente.'
+      });
+
+      void this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { motivo: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+      });
+    }
   }
   togglePassword() {
     this.showPassword.update(valor => !valor);
