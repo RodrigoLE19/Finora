@@ -80,3 +80,14 @@ export const loginUser = async (
         token
     };
 }
+
+export const obtenerPerfilUsuario = async (idUsuario: number) => {
+    const resultado = await pool.query(
+        `SELECT id_usuario, nombre, email
+         FROM usuarios
+         WHERE id_usuario = $1`,
+        [idUsuario]
+    );
+
+    return resultado.rows[0] ?? null;
+};

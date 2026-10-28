@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, forgotPassword, resetPassword } from "../controllers/auth.controller";
+import { register, login, forgotPassword, resetPassword, obtenerMiPerfil } from "../controllers/auth.controller";
 import { authenticateToken } from "../middlewares/auth.middlewares";
 import { rateLimit } from 'express-rate-limit';
 
@@ -31,11 +31,6 @@ router.post('/login', login);
 router.post('/forgot-password', limiteRecuperacion, forgotPassword);
 router.post('/reset-password', limiteRestablecimiento, resetPassword);
 
-router.get('/me', authenticateToken, (req, res)=> {
-    return res.status(200).json({
-        message: 'Token valido',
-        usuario: res.locals.usuario
-    });
-});
+router.get('/me', authenticateToken, obtenerMiPerfil);
 
 export default router;

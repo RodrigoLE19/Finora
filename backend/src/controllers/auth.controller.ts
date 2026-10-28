@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser } from "../services/auth.service";
+import { registerUser, loginUser, obtenerPerfilUsuario } from "../services/auth.service";
 import { solicitarRecuperacion, restablecerPassword } from "../services/password-reset.service";
 
 
@@ -150,3 +150,38 @@ export const resetPassword = async (
         });
     }
 }
+
+export const obtenerMiPerfil = async (
+    req: Request,
+    res: Response
+) => {
+    const idUsuario = res.locals.usuario?.idUsuario;
+
+    if (!Number.isInteger(idUsuario) || idUsuario <= 0) {
+        return res.status(401).json({
+            message: 'La sesión no contiene un usuario válido'
+        });
+    }
+
+    try {
+        const usuario = await obtenerPerfilUsuario(idUsuario);
+
+        if (!usuario) {
+            return res.status(401).json({
+                message: 'El usuario de la sesión ya no existe'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Perfil obtenido correctamente',
+            usuario
+        });
+
+    } catch {
+        console.error('No se pudo consultar el perfil del usuario');
+
+        return res.status(500).json({
+            message: 'No se pudo obtener el perfil'
+        });
+    }
+};
