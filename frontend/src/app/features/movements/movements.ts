@@ -36,7 +36,14 @@ export class Movements implements OnInit {
 
   formatearFecha(fecha: string): string {
 
-    return new Date(fecha).toLocaleDateString(
+    const [year, month, day] = fecha
+      .substring(0, 10)
+      .split('-')
+      .map(Number);
+
+    const fechaLocal = new Date(year, month - 1, day);
+
+    return fechaLocal.toLocaleDateString(
       'es-PE',
       {
         day: '2-digit',
